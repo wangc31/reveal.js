@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>SAML</title>
+
+	<meta name="author" content="Chen Wang">
+
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+	<!-- Code syntax highlighting -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement( 'link' );
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName( 'head' )[0].appendChild( link );
+	</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>SAML 2.0</h1>
+					<h3>Introduction and Demo</h3>
+					<p>
+						<small>2015/12/18</small>
+					</p>
+				</section>
+
+
+				<section>
+					<h2>What SAML means</h2>
+					<ul>
+						<li class="fragment">Security Assertion Markup Language</li>
+                        <li class="fragment">XML Based</li>
+                        <li class="fragment">Exchange Authentication and Authorization Data</li>
+					</ul>
+				</section>
+
+
+				<section>
+                    <section>
+                        <h2>Participants</h2>
+                        <ul>
+                            <li class="fragment">Pincipal － user, client, agent...</li>
+                            <li class="fragment">SP - Service Provider (Relying Party)</li>
+                            <li class="fragment">IdP - Identity Provider (Asserting Party)</li>
+                        </ul>
+                    </section>
+                    
+                    <section data-background="#ffffff">
+                        <img src="./SAML2/images/SAML-SSO-diagram.png">
+                    </section>
+				</section>
+
+                <section>
+                    <section>
+                        <h2>A Simple Story</h2>
+
+                        <ol>
+                            <li class="fragment">The principal requests service or resource from SP</li>
+                            <li class="fragment">The SP needs an identity assertion from IdP</li>
+                            <li class="fragment">The principal contacts the IdP and provides the info to authenticate</li>
+                            <li class="fragment">Once authentication succeeds, the SP will get the assertion</li>
+                            <li class="fragment">The SP decides whether to provide the service or resource to the principal</li>
+                        </ol>
+                    </section>
+                    
+                    <section data-background="#ffffff">
+                        <img src="./SAML2/images/saml-and-adfs.png">
+                    </section>
+                </section>
+                
+                <section>
+                    <h2>SAML building blocks</h2>
+                    <ul>
+                        <li class="fragment">Extensible Markup Language (XML)</li>
+                        <li class="fragment">XML Schema (XSD)</li>
+                        <li class="fragment">XML Signature</li>
+                        <li class="fragment">XML Encryption</li>
+                        <li class="fragment">Hypertext Transfer Protocol (HTTP)</li>
+                        <li class="fragment">Simple Object Access Protocol (SOAP)</li>
+                    </ul>
+                </section>
+                
+				<section>
+                    <h2>Anatomy of SAML</h2>
+                    <img align="left" src="./SAML2/images/saml-anatomy.gif">
+                    <ul>
+                        <li class="fragment">SAML Assertions</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h3>SAML Assertions</h3>
+                    <h4 class="fragment">Semantics</h4>
+                    <blockquote class="fragment">
+						Assertion A was issued at time t by issuer R regarding subject S provided conditions C are valid.
+					</blockquote>
+                </section>
+				
+                <section>
+                    <h3>SAML Assertions</h3>
+                    <h4 class="fragment">Syntax</h4>
+                    <pre class="fragment"><code>
+<saml:Assertion ID="A" IssueInstant="t">
+   <saml:Issuer>R</saml:Issuer>
+   <ds:Signature>...</ds:Signature>
+   <saml:Subject>S</saml:Subject>
+   <saml:Conditions>C</saml:Conditions>
+   <saml:AuthnStatement>
+      <saml:AuthnContext>
+        ...
+      </saml:AuthnContext>
+      ...
+   </saml:AuthnStatement>
+   <saml:AttributeStatement>
+    ...
+   </saml:AttributeStatement>
+</saml:Assertion>                    
+                    </code></pre>
+                    
+                    <p class="fragment">Assertion A was issued at time t by issuer R regarding subject S provided conditions C are valid (C contains the SP ID)</p>
+                </section>
+                
+                <section>
+                    <h2>Anatomy of SAML</h2>
+                    <img align="left" src="./SAML2/images/saml-anatomy.gif">
+                    <ul>
+                        <li>SAML Assertions</li>
+                        <li class="fragment">SAML Protocols</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h3>SAML Protocols</h3>
+                    <ul>
+                        <li class="fragment">how SAML elements (including assertions) are packaged in SAML request and response</li>
+                        <li class="fragment">the processing rules that SAML entities must follow when producing or consuming these elements</li>
+                    </ul>
+                    <p class="fragment">Defines SAML request and response elements</p>
+                </section>
+                
+                <section>
+                    <h3>SAML 2.0 Protocols (cont.)</h3>
+
+                    <ul>
+                        <li>Authentication Request Protocol</li>
+                        <li>Assertion Query and Request Protocol</li>
+                        <li>Artifact Resolution Protocol</li>
+                        <li>Name Identifier Management Protocol</li>
+                        <li>Single Logout Protocol</li>
+                        <li>Name Identifier Mapping Protocol</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h4>Authentication Request Protocol</h4>
+                    <pre><code style="word-wrap: break-word;">
+<samlp:AuthnRequest
+    xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+    ID="aaf23196-1773-2113-474a-fe114412ab72"
+    Version="2.0"
+    IssueInstant="2004-12-05T09:21:59">
+    <saml:Issuer>https://sp.example.com/SAML2</saml:Issuer>
+    <samlp:NameIDPolicy
+        AllowCreate="true"
+        Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient"/>
+</samlp:AuthnRequest>                                        
+                    </code></pre>
+                    
+                    <ol>
+                        <li>Request is issued by SP</li>
+                        <li>Redirected to IdP via browser</li>
+                        <li>IdP authenticates and issue assertion</li>
+                        <li>Redirected to SP via browser</li>
+                    </ol>
+                </section>
+                
+                <section>
+                    <h2>Anatomy of SAML</h2>
+                    <img align="left" src="./SAML2/images/saml-anatomy.gif">
+                    <ul>
+                        <li>SAML Assertions</li>
+                        <li>SAML Protocols</li>
+                        <li class="fragment">SAML Bindings</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h3>SAML Bindings</h3>
+                    <img align="left" width="30%" height="30%" src="./SAML2/images/Saml-over-soap-over-http.png"/>
+                    <ul align="right">
+                        <li class="fragment">SAML Core - what is transmit</li>
+                        <li class="fragment">SAML Bindings - how to transmit</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h3>SAML 2.0 Bindings (cont.)</h3>
+                    <ul>
+                        <li>HTTP Redirect Binding</li>
+                        <li>HTTP POST Binding</li>
+                        <li>HTTP Artifact Binding</li>
+                        <li>SAML URI Binding</li>
+                        <li>Reverse SOAP (PAOS) Binding</li>
+                        <li>SAML SOAP Binding (based on SOAP 1.1)</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h4>HTTP Redirect Binding</h4>
+                    <p class="fragment">Protocol messages as URL query string of HTTP GET request</p>
+                    <p class="fragment">SAMLRequest or SAMLResponse</p>
+                    
+                    <pre class="fragment"><code>
+https://idp.example.org/SAML2/SSO/Redirect?SAMLRequest=fZFfa8IwFMXfBb9DyXvaJtZ1BqsURRC2
+Mabbw95ivc5Am3TJrXPffmmLY3%2FA15Pzuyf33On8XJXBCaxTRmeEhTEJQBdmr%2FRbRp63K3pL5rPhYOpkVdY
+ib%2FCon%2BC9AYfDQRB4WDvRvWWksVoY6ZQTWlbgBBZik9%2FfCR7GorYGTWFK8pu6DknnwKL%2FWEetlxmR8s
+BHbHJDWZqOKGdsRJM0kfQAjCUJ43KX8s78ctnIz%2Blp5xpYa4dSo1fjOKGM03i8jSeCMzGevHa2%2FBK5MNo1F
+dgN2JMqPLmHc0b6WTmiVbsGoTf5qv66Zq2t60x0wXZ2RKydiCJXh3CWVV1CWJgqanfl0%2Bin8xutxYOvZL18NK
+UqPlvZR5el%2BVhYkAgZQdsA6fWVsZXE63W2itrTQ2cVaKV2CjSSqL1v9P%2FAXv4C                                        
+                    </code></pre>
+                </section>
+                
+                <section>
+                    <h4>HTTP POST Binding</h4>
+                    
+                    <pre class="fragment"><code>
+<form method="post" action="https://idp.example.org/SAML2/SSO/POST" ...>
+    <input type="hidden" name="SAMLRequest" value="''request''" />
+    ... other input parameter....
+</form>                                   
+                    </code></pre>
+                    
+                    <pre class="fragment"><code>
+<form method="post" action="https://sp.example.com/SAML2/SSO/POST" ...>
+    <input type="hidden" name="SAMLResponse" value="''response''" />
+    ...
+</form>                                
+                    </code></pre>
+                </section>
+                
+                <section>
+                    <h2>Anatomy of SAML</h2>
+                    <img align="left" src="./SAML2/images/saml-anatomy.gif">
+                    <ul>
+                        <li>SAML Assertions</li>
+                        <li>SAML Protocols</li>
+                        <li>SAML Bindings</li>
+                        <li class="fragment">SAML Profiles</li>
+                    </ul>
+                </section>
+                
+                <section>
+                    <h3>SAML 2.0 Profiles</h3>
+                    <p class="fragment">SSO Profiles</p>
+                    <ul class="fragment">
+                        <li>Web Browser SSO Profile</li>
+                        <li>Enhanced Client or Proxy (ECP) Profile</li>
+                        <li>Identity Provider Discovery Profile</li>
+                        <li>Single Logout Profile</li>
+                        <li>Name Identifier Management Profile</li>
+                    </ul>
+                    <p class="fragment">Artifact Resolution Profile</p>
+                    <p class="fragment">SAML Attribute Profiles</p>
+                    <p class="fragment">Assertion Query/Request Profile</p>
+                    <p class="fragment">...</p>
+                </section>
+                
+                <section>
+                    <section data-background="#ffffff">
+                        <h4>Web Browser SSO Profile</h4>
+                        <img height="60%" width="60%" align="left" src="./SAML2/images/Saml2-browser-sso-post.gif"/>
+
+                        <font size="6"><a href="./SAML2.html#/19/1">Step 1</a></font><br>
+                        <font size="6"><a href="./SAML2.html#/19/2">Step 2</a></font><br>
+                        <font size="6"><a href="./SAML2.html#/19/3">Step 3</a></font><br>
+                        <font size="6"><a href="./SAML2.html#/19/4">Step 4</a></font><br>
+                        <font size="6"><a href="./SAML2.html#/19/5">Step 5</a></font><br>
+                        <font size="6"><a href="./SAML2.html#/19/6">Step 6</a></font><br>
+                        <font size="6"><a href="./SAML2.html#/19/7">Step 7</a></font><br>
+                        <font size="6"><a href="./SAML2.html#/19/8">Step 8</a></font><br>
+                    </section>
+                
+                    <section>
+                        <h4>Web Browser SSO Profile</h4>
+                        <p>1. Request https://sp.example.com/myresource</p>
+                        <a href="./SAML2.html#/19">Back to Workflow</a>
+                    </section>
+                    
+                     <section>
+                    <h4>Web Browser SSO Profile</h4>
+                    <p>2. Respond with an XHTML form</p>
+                    
+                    <pre><code>
+<form method="post" action="https://idp.example.org/SAML2/SSO/POST" ...>
+    <input type="hidden" name="SAMLRequest" value="''request''" />
+    <input type="hidden" name="RelayState" value="''token''" />
+    ...
+    <input type="submit" value="Submit" />
+</form>                    
+                    </code></pre>                    
+
+                    <a href="./SAML2.html#/19">Back to Workflow</a>
+                    </section>
+
+                    <section>
+                        <h4>Web Browser SSO Profile</h4>
+                        <p>3. Request the SSO Service at the IdP</p>
+
+                        <pre><code>
+     POST /SAML2/SSO/POST HTTP/1.1
+     Host: idp.example.org
+     Content-Type: application/x-www-form-urlencoded
+     Content-Length: nnn
+
+     SAMLRequest=request&RelayState=token                   
+                        </code></pre>                    
+
+                        <a href="./SAML2.html#/19">Back to Workflow</a>
+                    </section>
+
+                    <section>
+                        <h4>Web Browser SSO Profile</h4>
+                        <p>4. Respond with an XHTML form</p>
+
+                        <pre><code>
+    <form method="post" action="https://sp.example.com/SAML2/SSO/POST" ...>
+        <input type="hidden" name="SAMLResponse" value="''response''" />
+        <input type="hidden" name="RelayState" value="''token''" />
+        ...
+        <input type="submit" value="Submit" />
+    </form>                 
+                        </code></pre>                    
+
+                        <a href="./SAML2.html#/19">Back to Workflow</a>
+                    </section>
+
+                    <section>
+                        <h4>Web Browser SSO Profile</h4>
+                        <p>5. Request the Assertion Consumer Service at the SP</p>
+
+
+                        <pre><code>
+    POST /SAML2/SSO/POST HTTP/1.1
+    Host: sp.example.com
+    Content-Type: application/x-www-form-urlencoded
+    Content-Length: nnn
+
+    SAMLResponse=response&RelayState=token            
+                        </code></pre>                    
+
+                        <a href="./SAML2.html#/19">Back to Workflow</a>
+                    </section>
+
+                    <section>
+                        <h4>Web Browser SSO Profile</h4>
+                        <p>6. Redirect to the target resource</p>
+
+                        <a href="./SAML2.html#/19">Back to Workflow</a>
+                    </section>
+
+                    <section>
+                        <h4>Web Browser SSO Profile</h4>
+                        <p>7. Request the target resource at the SP again</p>
+
+                        <pre><code>
+    https://sp.example.com/myresource          
+                        </code></pre>                    
+
+                        <a href="./SAML2.html#/19">Back to Workflow</a>
+                    </section>
+
+                    <section>
+                        <h4>Web Browser SSO Profile</h4>
+                        <p>8. Respond with requested resource</p>
+
+                        <a href="./SAML2.html#/19">Back to Workflow</a>
+                    </section>
+                    
+                </section>
+                
+                <section>
+                    <h2>SAML 2.0 Metadata</h2>
+                </section>
+                
+                <section>
+                    <h2>Demo of Web Browser SSO Profile</h4>
+                </section>
+                
+                
+                
+                <section>
+                    <h2>Userful Sites</h2>
+                    <p><a href="http://shibboleth.net/">http://shibboleth.net/</a></p>
+                    <p><a href="https://www.testshib.org/">https://www.testshib.org/</a></p>
+                    <p><a href="https://www.samltool.com/online_tools.php">https://www.samltool.com/online_tools.php</a></p>
+                </section>
+                
+				</div>
+
+			</div>
+
+			<script src="lib/js/head.min.js"></script>
+			<script src="js/reveal.js"></script>
+
+			<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+				{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+				{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+				{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+				{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+				{ src: 'plugin/zoom-js/zoom.js', async: true },
+				{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+	</html>
