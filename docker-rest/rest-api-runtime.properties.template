@@ -1,0 +1,1033 @@
+#
+# Copyright (c) 2016. EMC Corporation. All Rights Reserved.
+#
+
+# This file holds a template for all configurable parameters for the REST API server side deployment. Available
+# configurations include:
+#
+#  1.  Misc of Service Configuration
+#  2.  Mime Type Configuration
+#  3.  Content Format Restriction
+#  4.  Resources Compatibility mode
+#  5.  Batch Service Configuration
+#  6.  Search Service Configuration
+#  7.  Sanitization Configuration for Request Input
+#  8.  General Security Configuration
+#  9.  Security Configuration for Kerberos SSO
+#  10. Security Configuration for CAS SSO
+#  11. Security Configuration for RSA Access Manager SSO
+#  12. Security Configuration for SiteMinder Access Manager SSO
+#  13. Security Configuration for SAML 2.0 SSO
+#  14. Security Configuration for Pre-authenticated Login
+#  15. Security Configuration for Client Token Cookie
+#  16. Security Configuration for Cross Site Request Forgery (CSRF) Protection
+#  17. Cross-Origin Resource Sharing (CORS) Configuration
+#  18. Advanced Web Context Customization
+
+
+###################################################
+##       1. Misc of Service Configuration        ##
+###################################################
+
+# Specifies the default locale to retrieve the type definition resource. The value MUST be a valid local alias in the
+# repository. The default value is 'en'.
+#
+rest.default.locale=
+
+# The default number of results per page. The value MUST be a non-negative integer. The default value is 100.
+rest.paging.default.size=
+
+# Specifies the max number of results per page. If the value of the items-per-page parameter is greater than this
+# setting, the number of results returned is limited by this setting. The value MUST be a non-negative integer. The
+# default value is 1000.
+#
+rest.paging.max.size=
+
+# Determines whether or not to enable the REST request and response message logging on the server side. To enable the
+#  message logging, set this property to TRUE, and enable DEBUG logging level for the package
+# 'com.emc.documentum.rest.log' in log4j. The default value is false.
+#
+rest.message.logging.enabled=
+
+# Specifies the logging buffer size in byte for requests and responses when the message logging is enabled. The value
+# MUST be a non-negative integer. The default value is 1048567.
+#
+rest.message.logging.buffer=
+
+# Specifies the directory in Content Server to persist data for services like saved-search and user-preference.
+# If the folder doesn't exist or has no write permission for dm_world, there will be runtime exception raised.
+# It's administrator response to ensure the defined path qualified.
+#   1. the folder must exist.
+#   2. dm_world has write permission to create new sub-folder in it when necessary.
+#
+rest.persistence.folder=
+
+# Specifies the DFC session use preference in REST server. Available values are:
+#   private - prefer to use DFC private session in time-consuming operations, like create, update, delete and query
+#             based operations
+#   shared - never use DFC private session unless the operation is transactional
+# This setting has no impact to REST behaviors, but it has impact to the DFC session capacity of operation executions:
+#  - When requests for the same user are highly concurrent, it's recommended to use 'private'.
+#  - When requests for the same user is close to sequence, it's recommended to use 'shared'.
+# The default is private.
+#
+rest.dfc.session.use=
+
+# Specifies whether to validate resource link relations in the output representation.
+#   true -  validate the link relation href and if the href is invalid/inactive, the link relation is removed from the
+#           resource representation.
+#   false - do not validate and the link relation will be presented on the output representation anyway
+# For internal use only.
+#
+rest.link.relation.validate=
+
+# Sets the default behavior that whether to return thumbnails for sysobject feed entries by default.
+# It only affects the default behavior when the client is not specifying the url query parameter 'thumbnail',
+# meaning that whether this configuration is set to true or false, the client is still able to
+# control the returning of thumbnails at runtime by specifying the url query parameter 'thumbnail'.
+# The default is false.
+#
+rest.entry.thumbnail.default=
+
+# Determines whether or not to restrict the version label of a check-in operation.
+#  - true:  Use of numbers and the dot character (.) is limited in the following way:
+#           #  If you use dots to separate a version label, each part of the label CANNOT be a pure number. For examples,
+#              the following version labels are invalid when this property is set to true: 1.0, 2.1.11, Label1.0 or A.1.
+#           #  The following version labels are valid when this property is set to true: Label1, 123A or Label1.0.x.
+#  - false: No restriction on use of numbers and the dot character.
+# The default value is True.
+#
+rest.checkin.version.label.restricted=
+
+# Sets the runtime profile.
+# The runtime profile is used to provide REST clients a choice on whether the detail error message is returned by
+# core rest. There are two profiles 'development' and 'production'.
+#  - The profile 'development' returns more detail exception message to clients, such as the root cause of an exception
+#  - The profile 'production' only returns the important error information to clients, like only return the encapsulated
+#    rest exception.
+# The default runtime profile is 'production'.
+#
+rest.runtime.profile=
+
+
+#################################################
+##         2. Mime Type Configuration          ##
+#################################################
+#
+# This section contains the mime type configuration for the REST services.
+
+# Pre-defined MIME type to format mapping. When the client uploads data with the 'Content-Type'
+# header without specifying the query parameter 'format', the REST server has to resolve the format for the uploaded
+# data. In this case, the REST server looks up this section first to see if the mapping from the MIME type to the
+# corresponding format has been defined. If the mapping was not found in this section, the REST server runs a query to
+# pick up a default format according to the MIME type, ordering by the format name in the dm_format table.
+#
+# Determines whether or not to look up the MIME to format mapping for content format resolution. By default, the MIME to
+# format mapping is disabled, meaning that the REST server always runs a query to resolve format names.
+#  - true:  The REST server looks up the MIME type format mapping for content format resolution.
+#  - false: The REST server randomly picks up a MIME to format mapping based on the query.
+# The default value is false.
+#
+rest.mime.format.mapping.enabled=
+
+# Defines all MIME to format mappings in the following format: [repositoryName].[mime_type]=[format].
+# You CAN use the wildcard character (*) to represent all repositories. MIME to format mapping entries are overrided by
+# the repository specific mapping in case both mappings contain the same MIME type names.
+# Examples:
+# *.application/msword=msw8
+# my_repository.application/msword=msw12
+# my_repository.application/octet-stream=emcmf
+
+
+###################################################
+##         3. Content Format Restriction         ##
+###################################################
+#
+# This section contains the restriction configuration for Content Format.
+
+# Specifies the formats which is allowed to upload as a content. Only the formats in this list could be uploaded,
+# otherwise ,the uploading would be bloacked. The formats in the list should be seperated by ','.
+#
+rest.format.restriction.whitelist=
+
+# Specifies the formats which is forbidden from uploading as a content. The uploading in this list would be blocked.
+# The formats in the list should be seperated by ','.
+#
+rest.format.restriction.blacklist=
+
+
+################################################
+##       4. Resources Compatibility mode      ##
+################################################
+
+# This property specifies the compatibility mode of the REST server. For example, the valid ascending values are V1, V2
+# and CURRENT (CURRENT version is V3). This means Documentum REST services have three incompatible phases:
+#   1. (, V1], V1 included
+#   2. (V1, V2], V1 excluded/V2 included
+#   3. (V2, V3], V2 excluded/V3 included
+#
+# Valid values:
+#   - 7.1
+#       current version REST services run in a mode compatible with version 7.1.
+#       See below explanation about what incompatible changes have been brought between 7.1 and its later versions.
+#   - 7.2
+#       current version REST services run in a mode compatible with version 7.2.
+#       See below explanation about what incompatible changes have been brought between 7.2 and its later versions.
+#   - CURRENT
+# Default value: CURRENT
+# Default value will be adopted If the input is invalid
+#
+# [NOTE] It is strongly recommended to upgrade to the latest version since there is no single configuration for each
+#          change in different versions.
+#
+# Difference between versions:
+#   - 7.1 --> all versions after 7.1
+#       1. In Types resource - JSON - Atom entry - Atom content, "type" for CURRENT and "content-type" for 7.1
+#       2. In Type resource - JSON, 7.1 has additional wrapper curly braces and the Type object is the value of "type"
+#          attribute of the wrapper
+#
+#   - 7.2 --> all versions after 7.2
+#       1. All unknown field would be ignored by server which means it would NOT throw exception in 7.2, instead of
+#          throw exceptions in later versions.
+#       2. Undefined url would be accessible and return 404 if not existed in 7.2, instead of 403 in later versions.
+#
+rest.api.compatibility.version=
+
+
+####################################################
+##       5. Batch Service Configuration           ##
+####################################################
+
+# The maximum cache size in megabyte for a multipart batch. This property only works when transactional=false and
+# sequential=false, and the batch is a Multipart/Related request. To disable caching for the multipart batch request,
+# set the value to 0. In general, this value need not be changed. The default is 20.
+#
+rest.batch.multipart.cache.max.size=
+
+# Determines the number of batch requests that can be executed simultaneously on the server. Despite whoever submits the
+# batch request, the total count of running batches in the system cannot exceed this configuration value. When the
+# running batch count reaches this threshold, all attempts to submit new batch requests are rejected. The default is 50.
+#
+rest.batch.running.tasks.max.count=
+
+# Defines the maximum count of operations that can be included in one batch request. If the number of operations
+# embedded in a batch request exceeds this threshold, the batch request is rejected. The default is 1000.
+rest.batch.operations.max.count=
+
+# The thread pool size which is used to execute background batch tasks. The configuration sets the 'core' pool size. The
+# 'core' thread will not be closed even if it's idle. However, if there are too many tasks to be executed, the new
+# threads may be created even more than the core size. The maximum threads size will be the twice of this 'core' thread
+# configuration. Any threads exceed the configuration will be automatically closed after the execution, and be idle for
+# a while. The default is 5.
+#
+rest.batch.core.thread.pool.size=
+
+
+####################################################
+##       6. Search Service Configuration          ##
+####################################################
+
+# REST Search Service leverages DFC to search Content Server. The configuration sets a maximum time to wait in
+# seconds for an execution of DFC search request. Set to 0 to have no timeout.
+# When the property is not set, the default value is 60 seconds.
+#
+rest.search.dfc.request.timeout=
+
+
+#################################################################
+##      7. Sanitization Configuration for Request Input        ##
+#################################################################
+#
+# This section contains the sanitize configuration for the input object metadata and html content.
+
+# Determines whether to sanitize the metadata of an object.
+# The sanitize will modify the metadata (remove the suspicious part).
+# The default value is false.
+#
+rest.sanitize.type.metadata=false
+
+# Determines whether to sanitize the content of an html.
+# The sanitize will modify the content (remove the suspicious part).
+# The default value is false.
+#
+rest.sanitize.type.content=false
+
+# Set the max size of the content which will be sanitized.
+# If the content size is larger than the max size, it will not be sanitized.
+# The value is in bytes.
+# The default value is 500K bytes.
+#
+rest.sanitize.content.max.size=500000
+
+# Set the default html content charset/encoding.
+# When sanitizing the input html content, the charset is determined by the following sequence:
+# 1. the request parameter content-charset
+# 2. try to get the charset from html meta info
+# 3. both 1 and 2 failed, then use this default charset to sanitize the html content
+#
+rest.sanitize.content.default.charset=UTF-8
+
+# Specifies the content formats which will be sanitized.
+# Only the formats in this list will be sanitized.
+# The formats in the list should be separated by ','.
+# The format names refer to dm_format.
+#
+rest.sanitize.content.format=html,pub_html
+
+####################################################
+##       8. General Security Configuration        ##
+####################################################
+#
+# This section contains the general security configuration for the Documentum REST Services. Different combinations of
+# authentication schemes are supported. The default scheme is HTTP basic authentication for Content Server inline users
+# and LDAP users.
+
+# Specifies the authentication scheme or the combination of authentication schemes used for Documentum REST Services.
+# Please choose one scheme from below supported list : [basic, basic-ct, kerberos, ct-kerberos, basic-kerberos,
+# basic-ct-kerberos, basic-dual_ct-kerberos, ct-cas, basic-ct-cas, rsa, siteminder, preauth, ct-preauth, ct-saml2].
+#
+# basic
+#    - HTTP basic authentication for Content Server inline users and LDAP users synced to Content Server
+# basic-ct
+#    - Supports HTTP basic authentication and Client Token cookie for it
+# kerberos
+#    - SPNEGO-based Kerberos authentication for Active Directory domain users synced to Content Server
+# ct-kerberos
+#    - SPNEGO-based Kerberos authentication for Active Directory domain users synced to Content Server where Client
+#      Token cookie is supported for Kerberos
+# basic-kerberos
+#    - Supports both HTTP basic and Kerberos schemes
+# basic-ct-kerberos
+#    - Supports both HTTP basic and Kerberos schemes where Client Token cookie is supported for Kerberos
+#    - Only Kerberos authentication will generate the Client Token
+# basic-dual_ct-kerberos
+#    - Supports both HTTP basic and Kerberos schemes where Client Token cookie is supported for Kerberos
+#    - Both the basic authentication and Kerberos will generate the Client Token
+# ct-cas
+#    - Supports CAS scheme where Client Token cookie is supported for CAS
+# basic-ct-cas
+#    - Supports both HTTP basic and CAS schemes where Client Token cookie is supported for CAS
+# rsa
+#    - Supports RSA Access Manager SSO
+# siteminder
+#    - Supports SiteMinder Access Manager SSO
+# preauth
+#    - Support pre-authentication without Client Token cookie supported
+# ct-preauth
+#    - Support pre-authentication with Client Token cookie supported
+# ct-saml2
+#     - Support SAML 2.0 SSO with Client Token cookie supported.
+# The default mode is basic. For more information, refer to the Reference Guide for details.
+#
+rest.security.auth.mode=
+
+# Specifies the realm name for the authentication. It SHOULD be changed to your organization realm.
+#
+rest.security.realm.name=
+
+# Customizes the scheme type for the WWW-Authenticate response header for a 401 status. This setting adds a suffix
+# string to the scheme type of the header. The suffix is appended to the scheme type only when the client request sets a
+# custom header "DOCUMENTUM-CUSTOM-UNAUTH-SCHEME:true". For example for the Basic authentication, if the suffix is set
+# to "ACME",
+#  -  When the client request sets a custom header "DOCUMENTUM-CUSTOM-UNAUTH-SCHEME:true", the response header for
+#     status 401 is "WWW-Authenticate: Basic_ACME realm='<realm>'".
+#  -  When the custom header is not set or set to false, the response header for status 401 is the default
+#     "WWW-Authenticate: Basic realm='<realm>'".
+# When this property is not set, the default suffix string is "Customized".
+#
+rest.api.unauthorized.response.scheme.suffix=
+
+# Specifies the root URL for authentication mapping.
+# For internal use only.
+#
+rest.security.auth.root.url=
+
+# Specifies logout URL for client token sign out. This property can be used when Client Token cookie is used
+# in the authentication. It should be a relative URL. Defaults to "/logout".
+#
+rest.security.logout.url=
+
+# Specifies the URL to redirect after the successful logout. This property can be used when Client Token cookie is used
+# in the authentication. It can be a complete URL or a relative URL. When it is a relative URL, the server will insert
+# the request base and context path on the path.
+# When it is not specified, the server returns no content for the success logout.
+# Examples:
+#  - http://another-server/goodbye
+#  - /services
+#
+rest.security.logout.success.url=
+
+# Specifies whether to disable the Strict-Transport-Security header. If false, that HTTP Strict Transport  Security (HSTS)
+# is enabled when the network protocol is HTTPS and the response adds the following header:
+#  - Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+# Sees "http://tools.ietf.org/html/rfc6797" for additional details. Defaults to false.
+#
+rest.security.headers.hsts.disabled=
+
+# Specifies whether to include sub domains for the Strict-Transport-Security header. If true, sub domains should be
+# considered HSTS Hosts too.
+# Sees "http://tools.ietf.org/html/rfc6797#section-6.1.2" for additional details. Defaults to true.
+#
+rest.security.headers.hsts.include_sub_domains=
+
+# Specifies the value (in seconds) for the max-age directive of the Strict-Transport-Security header.
+# Sees "http://tools.ietf.org/html/rfc6797#section-6.1.1" for additional details. Defaults to one year.
+rest.security.headers.hsts.max_age_in_seconds=
+
+# Specifies whether to disable the Cache-Control header. If false, the response adds the following headers:
+#  - Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+#  - Pragma: no-cache
+#  - Expires: 0
+# Defaults to false.
+#
+rest.security.headers.cache_control.disabled=
+
+# Specifies whether to disable the X-Content-Type-Options header. If false, the response adds the following header:
+#  - X-Content-Type-Options: nosniff
+# Sees "http://msdn.microsoft.com/en-us/library/ie/gg622941(v=vs.85).aspx" for additional details. Defaults to false.
+#
+rest.security.headers.content_type_options.disabled=
+
+# Specifies whether to disable the X-Frame-Options header. If false, the response adds the following headers:
+#  - X-Frame-Options: DENY
+# Sees "https://developer.mozilla.org/en-US/docs/Web/HTTP/X-Frame-Options" for additional details. Defaults to false.
+#
+rest.security.headers.x_frame_options.disabled=
+
+# Specifies the X-Frames-Options policy. Allowed values are DENY and SAMEORIGIN.
+# Defaults to DENY.
+#
+rest.security.headers.x_frame_options.policy=
+
+# Specifies whether to disable the X-XSS-Protection header. If false, the response adds the following header:
+#  - X-XSS-Protection: 1; mode=block
+# Sees "http://blogs.msdn.com/b/ieinternals/archive/2011/01/31/controlling-the-internet-explorer-xss-filter-with-the-x-xss-protection-http-header.aspx"
+# for additional details. Defaults to false.
+#
+rest.security.headers.xss_protection.disabled=
+
+# Specifies whether to enable X-XSS-Protection explicitly. If true, the response adds the following header:
+#  - X-XSS-Protection: 1
+# If false, the response adds the following header:
+#  - X-XSS-Protection: 0
+# Defaults to true.
+#
+rest.security.headers.xss_protection.explicit_enable=
+
+# Specifies whether to set block mode for the X-XSS-Protection header. If true, the response adds the block mode to the
+# X-XSS-Protection header:
+#  - X-XSS-Protection: 1; mode=block
+# If false, the response does not adds a mode. Defaults to true.
+#
+rest.security.headers.xss_protection.block=
+
+
+###############################################################
+##       9. Security Configuration for Kerberos SSO          ##
+###############################################################
+#
+# This section contains the security configuration for Kerberos SSO. Settings in this section work only when the
+# Kerberos authentication scheme is set in the General Security Configuration section. All configuration properties in
+# this section MUST be uncommented when Kerberos SSO is enabled. Refer to the Reference Guide for detailed configuration
+# steps.
+
+# Specifies the Service Principal Name (SPN) for this REST server deployment. We recommend that you use this format:
+# HTTP/<FULL-HOSTNAME>. Please do not append the realm name (e.g. @MY-CORP.COM) to the SPN. This property MUST be
+# specified with a non-empty value.
+#
+rest.security.kerberos.spn=
+
+# Specifies the JAAS configuration file path on the local machine which specifies the Kerberos login module for the SPN.
+# Alternatively, it CAN be set in the web server startup command by appending
+# -Djava.security.auth.login.config=<JAAS-CONF-FILE-PATH>
+# This property MUST be specified with a non-empty value.
+#
+rest.security.kerberos.jaas.conf=
+
+# Specifies a colon-separated list of one or more DNS servers that the REST server SHOULD uses to look up DNS SRV records
+# for Active Directory domain controllers. Specify each DNS server by using either a hostname or  an IPv4 address.
+# Alternatively, it CAN be set in the web server startup command by appending
+# -Djcsi.Kerberos.nameservers=<COLON-SEPARATED-NAME-SERVERS>
+# This property MUST be specified with a non-empty value.
+#
+rest.security.kerberos.nameservers=
+
+# Specifies the threshold (in bytes) at which RESTful Services cuts over from UDP to TCP. The REST server uses 5000
+# bytes as the default threshold to reach the best performance. Alternatively, it CAN be set in the web server startup
+# command by appending -Djcsi.Kerberos.maxpacketsize=<MAX-SIZE>
+# This property CAN be left as empty where the actual threshold is 5000.
+#
+rest.security.kerberos.maxpacksize=
+
+# Specifies whether to enable constrained Kerberos delegation on Content Server repository SPNs. By default, the REST
+# server Kerberos SSO requires full delegation on all Content Server repository SPNs. When this parameter is set as true,
+# the REST server Kerberos SSO can be delegated to only a managed set of Content Server repositories.
+# Defaults to false.
+#
+rest.security.kerberos.constrained.delegation=
+
+
+################################################################
+##        10. Security Configuration for CAS SSO              ##
+################################################################
+#
+# This section contains the security configuration for CAS SSO. Settings in this section work only when the CAS
+# authentication scheme is set in the General Security Configuration section. All configuration properties in this
+# section must be uncommented when CAS SSO is enabled. Refer to the Documentum Platform REST Services Development Guide
+# for detailed configuration steps.
+
+# CAS server URL
+# Example: https://REST-API-CAS:8443/cas
+# This property MUST be specified with a non-empty value.
+#
+rest.security.cas.server.url=
+
+# CAS server login URL
+# Example: https://REST-API-CAS:8443/cas/login
+# This property MUST be specified with a non-empty value.
+#
+rest.security.cas.server.login.url=
+
+# CAS server logout URL
+# Example: https://REST-API-CAS:8443/cas/logout
+# This property MUST be specified with a non-empty value.
+#
+rest.security.cas.server.logout.url=
+
+# RESTful CAS server tickets requesting URL
+# Example: https://REST-API-CAS:8443/cas/v1/tickets
+# This property MUST be specified with a non-empty value.
+#
+rest.security.cas.server.tickets.url=
+
+# CAS proxy service name for Content Server, for example, 'ContentServer'
+# The same name must be registered in the CAS server and be configured in dm_cas.ini in Content Server.
+# This property MUST be specified with a non-empty value.
+#
+rest.security.cas.proxy.service=
+
+# Application (web) server root URL where the REST server is deployed, for example, 'https://REST-API-SERVER:443'
+# This URI is used by the REST server to construct a redirecting URI for CAS proxy authentication. If a reverse proxy is
+# configured in front of the REST server nodes, this URL must point to the reverse proxy server. You must specify this
+# property with a non-empty value.
+# You can set this property to the host name of the REST server without a need to append the protocol and port,
+# for example: rest.security.server.url=REST-API-SERVER.
+# In this case, the REST server constructs the redirecting URI according to the protocol specified in the request.
+# And if the port is not default port (80 or 443), the server will automatically pick up the port number from the request,
+# and append to rest.security.server.url.
+# You can also specify the rest.security.server.url with host name and port,
+# then all links the REST constructs start with rest.security.server.url.
+#
+rest.security.server.url=
+
+
+# CAS proxy callback URL
+# This URL is used for proxy callback from the CAS server to the CAS PGT callback server, 'https://REST-API-SERVER:8443'
+# The callback service can be pointed to the deployed REST server host or a reverse proxy host, depending on the
+# configuration. You must use HTTPS when specifying this URL. This property must be specified with a non-empty value.
+#
+rest.security.cas.callback.service.url=
+
+# Specifies the place where CAS clients store and retrieve PGT by mapping them to a specific ProxyGrantingTicketIou
+# Valid values:
+#    1) inmemory
+#    2) ehcache
+# When deploying a cluster of REST service nodes and using CAS for authentication,
+# depending on how ${rest.security.cas.callback.service.url} is set, you may need to use distributed ehcache in CAS
+# client to store PGTIOU/PGT mapping. When the inmemory storage is used, the callback URL addresses the exactly the same
+# REST service node as the node requesting PGT from the CAS server, typically, this requires that the callback URL be a
+# specific REST server URL instead of a reversed proxy URL. If a reversed proxy server for REST servers is used as
+# callback URL, the callback may be dispatched to another REST server, which requires using distributed ehcache to store
+# PGTIOU/PGT mapping across all REST servers. The default is inmemory storage.
+#
+rest.security.auth.cas.client.pgt.storage=
+
+
+#########################################################################
+##        11. Security Configuration for RSA Access Manager SSO        ##
+#########################################################################
+#
+# This section contains the security configuration for RSA Access Manager SSO. Settings in this section work only when
+# the RSA authentication scheme is set in the General Security Configuration section. Refer to the Documentum Platform
+# REST Services Development Guide for detailed configuration steps.
+
+# Specifies the RSA ClearTrust cookie name for the request set by the RSA web agent after a successful SSO authentication
+# The value of this property must be identical to that of "cleartrust.agent.cookie_name" in the RSA web agent. If
+# "cleartrust.agent.cookie_name" is set with the default value "CTSESSION," you can simply uncomment this property and
+# leave it empty.
+#
+rest.security.rsa.cleartrust.cookie.name=
+
+# Specifies the list of HTTP headers representing the authenticated principals set by the RSA web agent after a
+# successful SSO authentication The RSA web agent has a default list of headers to populate for the authentication. This
+# list is impacted by the setting of "cleartrust.agent.user_header_list" and "cleartrust.agent.exported_headers" in the
+# RSA web agent. The value must be comma separated header names without spaces. The value is case sensitive. For example,
+# "ct-remote-user,HTTP_CT_REMOTE_USER". Default value: "ct-remote-user, CT-REMOTE-USER, ct_remote_user, CT_REMOTE_USER,
+# HTTP_CT_REMOTE_USER". To use the default value, uncomment this property and leave it empty.
+#
+rest.security.rsa.user.header.list=
+
+# Specifies the address of RSA ClearTrust Server Dispatcher where the user is authenticated to. This information will be
+# used by Content Server for trusted RSA server validation. It works only when this address is in the list of Content
+# Server trusted RSA servers. The value follows this pattern: "HOSTNAME:PORT", for example "192.168.1.1:5608".This
+# property must be specified with a non-empty value.
+#
+rest.security.rsa.dispatcher.address=
+
+
+##################################################################################
+##           12. Security Configuration for SiteMinder Access Manager SSO       ##
+##################################################################################
+#
+# This section contains the security configuration for SiteMinder Access Manager SSO. Settings in this section work only
+# when the SiteMinder authentication scheme is set in the General Security Configuration section. Refer to the
+# Documentum Platform REST Services Development Guide for detailed configuration steps.
+
+# Specifies the SiteMinder cookie name for the request set by the SiteMinder web agent after the successful SSO
+# authentication. To use the default value, uncomment this property and leave it empty.
+# Default value: "SMSESSION"
+#
+rest.security.siteminder.cookie.name=
+
+# Specifies the HTTP header representing the authenticated principals set by the SiteMinder web agent after the
+# successful SSO authentication. To use the default value, uncomment this property and leave it empty.
+# Default value: "SM_USER"
+#
+rest.security.siteminder.user.header=
+
+
+##########################################################################
+##         13. Security Configuration for SAML 2.0 SSO                  ##
+##########################################################################
+#
+# This section contains the security configuration for SAML 2.0 SSO to specify parameters required during SAML SSO processing.
+# Configuration in this section work only when SAML 2.0 SSO scheme is set in the General Security Configuration section.
+# Refer to the Documentum Platform REST Services Development Guide for detailed configuration steps.
+
+# Specifies the keystore file. The REST server uses the key entry in this keystore to sign SAML assertion.
+# The path of the keystore file defined here supports absolute file system path and relative path against the classpath.
+# For example, if the file keystore.jks is in directory "$REST_ROOT/WEB-INF/classes/security", the path defined here is
+# "/security/keystore.jks". If the file keystore.jks is in absolute file system path "/root/ks", the path defined is
+# "/root/ks/keystore.jks". As keystore file is required for SAML 2.0 SSO, this property is mandatory for authentication
+# schema "ct-saml2". Note that only JKS type of keystore is supported.
+#
+rest.security.saml2.ks.file=
+
+# Specifies the password of the keystore file specified by "rest.security.saml2.ks.file".
+#
+rest.security.saml2.ks.password=
+
+# Specifies the alias of the key entry in the keystore file defined in property "rest.security.saml2.ks.file"; the REST
+# server uses this key entry to sign SAML assertion. This property is mandatory for authentication schema "ct-saml2".
+#
+rest.security.saml2.ks.entry.alias=
+
+# Specifies the password of the key entry specified by property "rest.security.saml2.ks.file"; the REST server uses this
+# password to visit the private key in the keystore. This property is mandatory for authentication schema "ct-saml2".
+#
+rest.security.saml2.ks.entry.password=
+
+# Specifies the binding used for for sending SAML message to IdP.
+# The supported binding depends on the capability of the IdP, which can be found in the metadata of the IdP.
+# Generally the set of binding include HTTP-Redirect, HTTP-POST. For unsupported binding, it will raise error at runtime.
+# This property is mandatory for authentication schema "ct-saml2".
+#
+rest.security.saml2.request.binding=
+
+# Specifies the IdP metadata files. The REST server uses these metadata files to decide how to communicate with the IdP.
+# If only one file is specified here, the REST server will use this one to resolve the IdP to authenticate with.
+# If more than one files are specified here, the REST server will initialize IdP discovery process and presents user agent
+# the IdP options so that the user agent can select one to authenticate.
+# The path of the metadata file defined here supports absolute file system path and relative path against the classpath.
+# For example, if the metadata file idp.xml is in directory "$REST_ROOT/WEB-INF/classes/metadata", the path defined here
+# is "/metadata/idp.xml". If the metadata file idp.xml is in /root/metadata, the path defined is "/root/metadata/idp.xml".
+# This property is mandatory for authentication schema "ct-saml2". The files are separated by comma.
+#
+rest.security.saml2.idp.metadata.files=
+
+# Specified the attributes in the SAML attribute statements, which contain the principal name. The REST server uses this
+# principal name to login the Content Server and get session. The value defined in the property depends on the
+# configuration of the IdP. This property is mandatory for authentication schema "ct-saml2". The attributes are separated
+# by comma.
+#
+rest.security.saml2.user.attributes=
+
+# Specifies the timeout in seconds for the SAML request ID cookie.
+# The Documentum REST uses the SAML request ID cookie to guarantee that the SAML response matches the original SAML request.
+# During the validation, the Documentum REST will also check if the current time is before the value of attribute
+# "NotOnOrAfter", which is an attribute "NotOnOrAfter" of SAML response in its subject confirmation.
+# For this reason, the SAML request ID cookie shouldn't expire before the timestamp of the attribute "NotOnOrAfter".
+# The attribute "NotOnOrAfter" is configurable for IdPs; you should adjust this runtime property to satisfy the constraint.
+# This property MUST be specified with a non-empty value. Defaults 300.
+#
+rest.security.client.saml2.timeout=
+
+
+##########################################################################
+##         14. Security Configuration for Pre-authenticated Login       ##
+##########################################################################
+#
+# This section contains the security configuration for Pre-authenticated Login to parse the principal from the request
+# by the front service. Configuration in this section work only when preauth scheme is set in the General Security
+# Configuration section.
+# Refer to the Documentum Platform REST Services Development Guide for detailed configuration steps.
+
+# Specifies the names of headers which contain the principal name sent by the front service. The value must be comma
+# separated header names without spaces. The value is case sensitive. The REST server will iterate the headers of request
+# and get the first one contained in the set of cookie names defined here. For example, assuming
+# [FrontServiceToken1,FrontServiceToken2] is specified here. HTTP request has header "FrontServiceToken1=principal_name".
+# "principal_name" will be extracted to attempt DFC principal login. If the value is not specified, the REST server
+# won't extract principal name from headers. Priority of headers is higher than cookies setting to extract principal name.
+#
+rest.security.preauth.header.names=
+
+# Specifies the names of cookies which contain the principal name sent by the front service. The value must be comma
+# separated cookie names without spaces. The value is case sensitive. The REST server will iterate the cookies of request
+# and get the first one contained in the set of cookie names defined here. For example,
+# [FrontServiceToken1,FrontServiceToken2] is specified here. HTTP request has cookie "FrontServiceToken2=principal_name".
+# "principal_name" will be extracted to attempt DFC principal login.If the value is not specified, the REST server won't
+# extract principal name from cookie. Priority of cookie is lower than header to extract principal name.
+#
+rest.security.preauth.cookie.names=
+
+# Specified the regular expression patterns to extract principal name from the distinguished name by the front service.
+# The value must be dual-pound (##) separated regular expressions without spaces. The value is case sensitive.
+# For example, "uid=(.*)?,ou=ecd,dc=emc,dc=com##(.*)" is specified here. If distinguished name by the front service is
+# "uid=joe,ou=ecd,dc=emc,dc=com", first regular expression will work and "joe" will be parsed out. If distinguished name
+# by the front service is "joe"", the second regular expression will work and "joe" will be extracted.
+# By default, the regular expression is "(.*)" to match the whole string.
+#
+rest.security.preauth.principal.patterns=
+
+
+#########################################################################
+##          15. Security Configuration for Client Token Cookie         ##
+#########################################################################
+#
+# This section contains the security configuration for client token cookie which is used for authenticated users.
+# Settings in this section work when a specific authentication scheme and the client token are set together in the
+# General Security Configuration section. All configuration properties in this section MUST be uncommented when client
+# token cookie is enabled. Refer to the Reference Guide for detailed configuration steps.
+
+# # Supported expiration policies for client token cookie are:
+# (1) com.emc.documentum.rest.security.ticket.impl.HardTimeoutExpirationPolicy
+#     The client token expires after a specified duration. If the REST client sends a request before the duration, the
+#     REST server accepts the client token. If the REST client sends a request after the duration, the REST server
+#     rejects the client token, and the client has to authenticate again.
+#
+# (2) com.emc.documentum.rest.security.ticket.impl.TolerantTimeoutExpirationPolicy
+#     - the client token expires at a date/time for inactivity;
+#     - if the REST client comes before the expiry time, the REST server accepts the client token;
+#     - if the REST client comes after the expiry time but still within a tolerant time slot,
+#       the REST server accepts the client token, and renews another client token with a new lifetime to set back for
+#       next call use;
+#     - if the REST client comes after the expiry time and out of the tolerant time slot,
+#       the REST server rejects the client token, then the REST client needs to authenticate again.
+#     - the tolerant time slot is set as the same duration to the expiry time
+#     The client token expires after two times of the specified duration. The REST server issues new client tokens under
+#     certain conditions. For details, see the following:
+#     - If the REST client sends a request before the duration, the REST server accepts the client token.
+#     - If the REST client sends a request after the duration, and before two times of the duration, the REST server
+#       accepts the client token, and issue another client token with the same duration to the client for subsequent
+#       requests.
+#     - If the REST client sends a request after two times of the duration comes to an end, the REST server rejects the
+#       client token, and the client has to authenticate again.
+#
+# (3) com.emc.documentum.rest.security.ticket.impl.TouchedTimeoutExpirationPolicy
+#     The client token expires after a specified duration. The REST server issues new client tokens under certain
+#     conditions. For details, see the following:
+#     - If the REST client sends a request before the duration, the REST server accepts the client token, and issues
+#       another client token with the same duration to the client for subsequent requests.
+#     - If the REST client sends a request after the duration, the REST server rejects the client token, and the client
+#       has to authenticate again.
+#
+# By default, the REST server uses the TolerantTimeoutExpirationPolicy policy.
+#
+rest.security.client.token.expiration.policy=
+
+# This property is used by all expiration policies. The timeout in seconds for the client token cookie.
+# This property MUST be specified with a non-empty value. The default is 3600 seconds.
+#
+rest.security.client.token.timeout=
+
+# Symmetric crypto algorithm that RESTful Services uses to encrypt and decrypt client tokens, the block cipher mode,
+# and the padding strategy in the following pattern:
+# rest.security.crypto.algorithm=<crypto_algorithm>/<block_cipher_mode>/<padding_strategy>
+# Each provider MAY have different implementations and limitations. This property is optional. We do not recommend that
+# you set <padding_strategy> to NoPadding because the CT length is not always compatible with the block size.
+# Default: AES/CBC/PKCS5Padding
+#
+rest.security.crypto.algorithm=
+
+# Crypto algorithm parameters class name
+# Valid values: javax.crypto.spec.IvParameterSpec, or blank.
+# If the algorithm requires extra parameters, such as initialization vector (IV), set this property to
+# javax.crypto.spec.IvParameterSpec. Otherwise, leave it blank.
+# For example, if AES/CBC/PKCS5Padding is used, the value MUST be set to javax.crypto.spec.IvParameterSpec.
+# If AES/ECB/PKCS5Padding is used, the value MUST be blank. This property is optional for the ECB, CBC, OFB, and CFB
+# modes. The system selects the correct class for these modes.
+#
+rest.security.crypto.algorithm.parameters.class=
+
+# Algorithm to generate the secret key
+# Examples: AES, DESede, DES, RC5, HmacMD5, and Blowfish
+# The key generating algorithm MUST be compatible with the crypto algorithm. This property is optional.
+# Default: AES
+#
+rest.security.key.algorithm=
+
+# Random algorithm name
+# Default: HMACDRBG256 (for the RSA provider)
+# You CAN set this property to other random generation algorithms.
+#
+rest.security.random.algorithm=
+
+# Crypto provider name
+# Default: JsafeJCE (the RSA provider)
+# Alternatively, set this property to 'BC' to use the Bouncy Castle provider. When REST Services uses the Bouncy Castle
+# provider, its library MUST be specified in the class path.
+#
+rest.security.crypto.provider=
+
+# Whether replace the application/web server's registered provider with the same provider name.
+# Default: false
+# If the provider with name specified by rest.security.crypto.provider is already registered in the server, then whether
+# replace it by rest.security.crypto.provider.class, depends on the value of this configuration. Set the value to false,
+# if the provider is already existed, then the REST will try to reuse it. Otherwise, the registered provided will be
+# removed, and rest.security.crypto.provider.class will be registered.
+#
+rest.security.crypto.provider.force.replace=
+
+# Crypto provider class name
+# Default: com.rsa.jsafe.provider.JsafeJCE (for the RSA JsafeJCE provider)
+# It can be org.bouncycastle.jce.provider.BouncyCastleProvider for the Bouncy Castle as well. This property is optional
+# if the provider is RSA JsafeJCE or Bouncy Castle.
+#
+rest.security.crypto.provider.class=
+
+# Key size in bit for the secret key
+# This property MUST be compatible with the crypto algorithm.
+# If you want to use a key size larger than 128 bits, download the "JCE Unlimited Strength Jurisdiction Policy Files" from
+# the Oracle web site. By default, the key size is 64 for DES, and 128 for all other algorithms.
+#
+rest.security.crypto.key.size=
+
+# Block size in bit
+# This property MUST be compatible with the crypto algorithm. By default, the block size is 64 bits for Blowfish, DES,
+# DESede, RC2, and RC5, and 128 bits for all other algorithms.
+#
+rest.security.crypto.block.size=
+
+# Crypto salt for client token encryption and decryption
+# For a multi-node deployment of REST servers, this property MUST be consistently set across all REST servers. For a
+# single-node deployment of REST servers, this property is optional. The value CAN be any ascII characters. We recommend
+# that you specify a text no less than 8 characters.
+#
+rest.security.crypto.key.salt=
+
+# Specifies the mode of the JsafeJCE provider.
+# Valid values are:
+#  -	FIPS140_MODE: only FIPS140-approved algorithms and default algorithms are allowed
+#  -	NON_FIPS140_MODE: all algorithms are allowed
+# When you deploy Documentum REST Services on IBM WebSphere and use CAS or Kerberos authentication, the value must be
+# set to NON_FIPS140_MODE.
+# Default value: FIPS140_MODE
+#
+rest.security.crypto.provider.jsafejce.mode=
+
+
+##############################################################################################
+##        16. Security Configuration for Cross Site Request Forgery (CSRF) Protection       ##
+##############################################################################################
+#
+# This section contains the configuration of CSRF protection for Client Token cookie.
+
+# Determines whether the CSRF protection is enabled for Client Token. The default value is true.
+#
+rest.security.csrf.enabled=
+
+# Specifies for which http methods, the requests will be required for CSRF token.
+# Multiple methods should be separated by ','.
+# The default value is POST,PUT,DELETE.
+#
+rest.security.csrf.http_methods=
+
+# Specifies the CSRF token generation method. Valid values are 'client' and 'server'.
+#
+# When the value is 'client', the client must provide the CSRF token and parameters in the initial authentication, and
+# later send the CSRF token together with Client Token cookie for authentications. The initial authentication request
+# should provide the request headers below:
+#   DOCUMENTUM-CSRF-HEADER-NAME: {csrfHeaderName}
+#   DOCUMENTUM-CSRF-QUERY-NAME: {csrfQueryName}
+#   DOCUMENTUM-CSRF-TOKEN: {csrfTokenValue}
+#
+# DOCUMENTUM-CSRF-TOKEN is mandatory. At least one header of DOCUMENTUM-CSRF-HEADER-NAME and DOCUMENTUM-CSRF-QUERY-NAME
+# must be provided at the same time.
+#
+# The following Client Token cookie authentications must provide the CSRF token in a request header or a query parameter.
+# For a request which sends CSRF token by the request header, its headers are like this:
+#   {csrfHeaderName}: {csrfTokenValue}
+# For a request which sends CSRF token by the query parameter, its request URI query is like this:
+#   /repositories/{REPO}?{csrfQueryName}={csrfTokenValue}
+#
+# When the value is 'server', the server will generate the CSRF token and parameters during the initial authentication and
+# send back to the client together with Client Token cookie. The client later should send the CSRF token together with
+# Client Token cookie for authentications. The initial authentication request remains the same as before, but the
+# authentication response will sends additional headers, like below:
+#   DOCUMENTUM-CSRF-HEADER-NAME: {csrfHeaderName}
+#   DOCUMENTUM-CSRF-QUERY-NAME: {csrfQueryName}
+#   DOCUMENTUM-CSRF-TOKEN: {csrfTokenValue}
+#
+# The client must remember the CSRF token and parameters and use them in the following Client Token cookie authentications.
+# The following requests are the same as Client Token authentication requests for 'client' token generation.
+#
+# The default value is 'server'.
+#
+rest.security.csrf.generation.method=
+
+# Specifies the {csrfHeaderName} for CSRF 'server' token generation. The default value is 'DOCUMENTUM-CSRF-TOKEN'. When
+# the default is set, the Client Token authentication requests should have a header like below:
+#   DOCUMENTUM-CSRF-TOKEN: {csrfTokenValue}
+# Please note 'rest.security.csrf.header_name' and 'rest.security.csrf.parameter_name' can be set together. Then the client
+# can decide to send CSRF token either by a request header or a query parameter.
+#
+rest.security.csrf.header_name=
+
+# Specifies the {csrfQueryName} for CSRF 'server' token generation. The default value is 'csrf-token'. When the default
+# is set, the Client Token authentication requests should have a URI query like below:
+#   /repositories/{REPO}?csrf-token={csrfTokenValue}
+# Please note 'rest.security.csrf.header_name' and 'rest.security.csrf.parameter_name' can be set together. Then the client
+# can decide to send CSRF token either by a request header or a query parameter.
+#
+rest.security.csrf.parameter_name=
+
+# Specifies the 'server' generated CSRF token length in bits. This value is only used when property
+# 'rest.security.csrf.generation.method' is 'server'. The value must be an positive integer multiple of 8. The default
+# value is 256.
+#
+rest.security.csrf.token.length=
+
+
+#######################################################################
+##       17. Cross-Origin Resource Sharing (CORS) Configuration      ##
+#######################################################################
+
+# Specifies whether to enable cross origin resource sharing support. The default value is false.
+#
+rest.cors.enabled=
+
+# Specifies the origins which are allowed to share. If want make any origin is able to share, set the value to *. If
+# there are more than one origins, the value should be seperated by ',', for example, http://emc.com,https://test.com:8443
+# The default value *.
+#
+rest.cors.allowed.origins=
+
+# Specifies the HTTP methods allowed to be shared. The value should be in upper case, and seperated by ','.
+# The default value is: *.
+#
+rest.cors.allowed.methods=
+
+# Specifies the HTTP headers allowed to be sent. The value should be separated by ','. The default value is '*', which
+# means all headers are allowed.
+#
+rest.cors.allowed.headers=
+
+# Specifies whether to allow user credentials. The default value is true.
+#
+rest.cors.allow.credentials=
+
+# Specifies the headers which are safe to expose to the API. The values are seperated by ','. The simple headers are
+# exposed by CORS specification, and need not be set: Cache-Control, Content-Language, Content-Type, Expires,
+# Last-Modified, Pragma. The default exposed header is 'Location'.
+#
+rest.cors.exposed.headers=
+
+# Specifies the life time in seconds the results of a 'preflight' request can be cached. The value is in seconds, and the
+# default is 3600 (one hour).
+#
+rest.cors.max.age=
+
+
+#########################################################
+##       18. Advanced Web Context Customization        ##
+#########################################################
+
+# Specify the base packages to scan for Spring components. It is used by Spring servlet to load the context configurations
+# during the servlet initialization. This setting will scan all customer defined configurations in this specific packages.
+# Typically, a customer defined configuration is annotated by 'org.springframework.context.annotation.Configuration @Configuration'
+# or plain 'org.springframework.stereotype.Component @Component' classes, which are used to load customer defined beans.
+# This is by semantics equivalent to customizing context-param 'contextConfigLocation' in a file web.xml. The location
+# string can consist of multiple locations separated by commas, semicolons or whitespace. The REST default context config
+# location 'com.emc.documentum.rest.context.jc' is always added into the context config locations.
+# For example, if its value is set as "com.acme.rest.context", it is equivalent to the XML definition in the web.xml:
+#  <context-param>
+#      <param-name>contextConfigLocation</param-name>
+#      <param-value>com.emc.documentum.rest.context.jc, com.acme.rest.context</param-value>
+#  </context-param>
+#
+rest.context.config.location=
+
+# Specifies the directory in your local file system to store temporary files generated by the REST server. If the path
+# does not exist, the server will try to create a new directory (including parent directories) for the path. If the path
+# name contains illegal characters, an exception will be thrown. The default value is the return of
+# System.getProperty("java.io.tmpdir").
+#
+rest.temp.dir=
+
+# Sets the package(s) for custom message files.
+# Custom message files are added to the packages under 'src/main/resources' to provide message code to localizable
+# message mapping. The message files must be in pattern of "rest-*messages*.properties". For instance, for the custom
+# message file path 'src/main/resources/org/acme/messages/rest-api-acme-messages.properties', the custom package name is
+# 'org.acme.messages'. Use comma (,) to separate multiple packages.
+# Custom message files take precedence over the core default message files. Therefore, please keep caution that any
+# overridden message code globally affects the message localization for all resources which use the same message code.
+#
+rest.extension.message.packages=
+
+# Sets the package(s) for custom error code mapping json files.
+# Custom error mapping json files are added to the packages under 'src/main/resources' to provide the error message
+# mapping from DFC to REST via JSON configuration files.
+# The message files must be in pattern of "rest-*error-mapping.json". For instance, for the custom message file
+# path 'src/main/resources/org/acme/messages/rest-api-acme-error-mapping.json', the custom package name is
+# 'org.acme.messages'. Use comma (,) to separate multiple packages.
+#
+rest.ext.error.code.mapping.packages=
+
+# Sets url patterns of anonymous resources.
+# These custom patterns would be added after default anonymous resources.
+# Multiple patterns are supported to be separated with comma.
+# The patterns refer to @RequestMapping on certain controller.
+#
+rest.security.anonymous.url.patterns=/anonymous-accessible-resource, /any-other-resource
+
+# Specifies whether to validate the status of the outer resource controller for the corresponding new resource creation
+# in a collection.
+#   true - validate the outer resource controller and fail with 403 if the controller is inactive
+#   false - do not validate and the new resource will be created anyway even though it may not have the resource links.
+# For internal use only.
+#
+rest.post.outer.controller.validate=
+
+# Sets the package (folder location) for custom yaml file.
+# Custom YAML files are added to your REST extension project's war overlay module under the path
+# 'src/main/resources/<package_name_separated_by_slash>'.
+# For instance, when custom YAML files are put under 'src/main/resources/org/acme/sample', the package should be set as
+# rest.ext.yaml.package=org.acme.sample.
+# REST runtime looks up the YAML file by the ANT pattern: {rest.ext.yaml.package}/{rest.ext.yaml.name}.
+# The default package is 'com.emc.documentum.rest.script'.
+#
+rest.ext.yaml.package=
+
+# Sets the name pattern for YAML file.
+# As at different development stages (by release, iteration, or dev/product environment, etc.), the customization of YAML
+# files can vary. REST runtime allows to specify an ANT pattern of YAML file name, e.g. 'rest-api-*.yaml', '*.yml'.
+# REST runtime looks up the YAML file by the ANT pattern: {rest.ext.yaml.package}/{rest.ext.yaml.name}.
+# The default name pattern of the YAML file is '*.yaml'. A default YAML file 'rest-api-custom-resource-registry.yaml' is
+# put under WAR path 'WEB-INF/classes/com/emc/documentum/rest/script'.
+#
+rest.ext.yaml.name=
+
+# Sets the common REST Ehcache configuration which overrides the module specific Ehcache settings for the REST services.
+# The default location is 'rest-api-common-ehcache.xml' under the WAR classpath.
+#
+rest.ehcache.common.config.file=

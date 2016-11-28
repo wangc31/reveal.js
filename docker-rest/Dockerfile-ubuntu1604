@@ -1,0 +1,57 @@
+FROM ubuntu:16.04
+
+MAINTAINER Chen Wang <chen.wang@emc.com>
+
+# Tomcat env vars
+ENV TOMCAT_MAJOR 8
+ENV TOMCAT_VERSION 8.0.36
+ENV TOMCAT_TGZ_URL https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
+ENV CATALINA_HOME /opt/tomcat
+ENV PATH $PATH:$CATALINA_HOME/bin
+
+# Install JRE 8 and tomcat
+RUN \
+apt-get update && \
+apt-get install -y openjdk-8-jre && \
+apt-get install -y wget && \
+apt-get install -y unzip && \
+rm -rf /var/lib/apt/lists/* && \
+wget --quiet --no-cookies ${TOMCAT_TGZ_URL} -O /tmp/tomcat.tgz && \
+tar xzvf /tmp/tomcat.tgz -C /opt && \
+mv /opt/apache-tomcat-${TOMCAT_VERSION} ${CATALINA_HOME} && \
+rm /tmp/tomcat.tgz && \
+rm -rf ${CATALINA_HOME}/webapps/examples && \
+rm -rf ${CATALINA_HOME}/webapps/docs && \
+rm -rf ${CATALINA_HOME}/webapps/ROOT
+
+# REST env vars
+ENV DCTM_REST_URL ftp://wangchen:passw0rd@10.62.87.33/apps/rest-with-fix/dctm-rest.war
+ENV DCTM_REST_HOME ${CATALINA_HOME}/webapps/dctm-rest
+ENV WORK_DIR /root/rest
+ENV LOGS_DIR ${WORK_DIR}/logs
+ENV CONFIG_DIR ${WORK_DIR}/config
+
+
+# Import REST
+WORKDIR ${WORK_DIR}
+RUN \
+mkdir ${LOGS_DIR} && \
+mkdir ${CONFIG_DIR} && \
+wget --quiet ${DCTM_REST_URL} -O /tmp/dctm-rest.war && \
+unzip  /tmp/dctm-rest.war -d ${DCTM_REST_HOME} && \
+rm /tmp/dctm-rest.war && \
+sed -i 's|\(log4j.appender.R.File=\).*$|\1'"${LOGS_DIR}"'/rest-api.log|' ${DCTM_REST_HOME}/WEB-INF/classes/log4j.properties
+
+# Copy the script in work dir
+COPY entrypoint.sh ./
+
+#expose the ports
+EXPOSE 8080 8443 8009
+
+# Users can use volume LOGS_DIR to map the configuration logging files from container folder to host folder.
+VOLUME ${LOGS_DIR}
+# Users can use volume CONFIG_DIR to map the configuration files from host folder to container folder.
+VOLUME ${CONFIG_DIR}
+
+# Launch Tomcat
+ENTRYPOINT ["./entrypoint.sh"]
