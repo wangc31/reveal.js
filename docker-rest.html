@@ -195,8 +195,8 @@ docker restart rest
                 <a href="docker-rest/design.png"><img width="70%" class="fragment" src="docker-rest/design.png" alt=""></a>
             </section>
             <section>
-                <h3>Dockerfile</h3>
-                <p><a href="docker-rest/Dockerfile-ubuntu1604">Dockerfile for ubuntu 16.04</a></p>
+                <h4>Dockerfile</h4>
+                <i><a href="docker-rest/Dockerfile-ubuntu1604">Dockerfile for ubuntu 16.04</a></i>
                 <pre><code class="hljs" data-trim contenteditable>
 FROM ubuntu:16.04
 
@@ -282,8 +282,96 @@ curl -k https://dmadmin:password@localhost:8443/dctm-rest/repositories/REPO
                     <pre class="fragment"><code>docker swarm init</code></pre>
                     <li class="fragment">on another Docker host</li>
                     <pre class="fragment"><code>docker swarm join</code></pre>
-                    <li class="fragment">...</li>
+                    <li class="fragment">if more nodes, ...</li>
                 </ol>
+            </section>
+            <section>
+                <h3>Mapping Configuration Files Cross Nodes</h3>
+                <p class="fragment">network dirver or third-party solution (like <a href="https://clusterhq.com/flocker/introduction/">flocker</a>)</p>
+                <b class="fragment"><i>here we will burn the configuration files in the image</i></b>
+            </section>
+            <section>
+                <h3>Burn Configuration Files</h3>
+                <pre><code>
+FROM restapi_ubuntu:7.3.0000.0590
+#config directory containing the necessary configuration files
+COPY config/ ${CONFIG_DIR}/                    
+                </code></pre>
+                <pre><code>
+docker build -t rest-node .                    
+                </code></pre>
+                <p class="fragment">push image to registry so that all swarm ndoes can get image</p>
+                <pre class="fragment"><code>
+docker push rest-node                    
+                </code></pre>
+            </section>
+            <section>
+                <h3>Initiate REST Services on Multiple Nodes</h3>
+                <pre class="fragment"><code>
+docker service create --replicas 2 --name rest-multinodes -p 8080:8080 rest-node                    
+                </code></pre>
+                <p class="fragment">check the service</p>
+                <pre class="fragment"><code>
+docker service ls                 
+docker service ps rest-multinodes   
+                </code></pre>
+            </section>
+            <section>
+                <h3>Consume REST Services</h3>
+                <pre class="fragment"><code>
+curl http://[NODE_IP]:8080/dctm-rest/repositories/                    
+                </code></pre>
+            </section>
+            <section data-background="#ffffff">
+                <h3 style="color: black">Topology</h3>
+                <img src="docker-rest/swarm-lb.png" alt="swarm load balancing">
+            </section>
+            <section>
+                <h3>Scale REST Services</h3>
+                <pre class="fragment"><code>
+docker service scale rest-multinodes=3                    
+                </code></pre>
+                <pre class="fragment"><code>
+docker service ls                   
+                </code></pre>
+            </section>
+            <section>
+                <section>
+                    <h3>Upgrade REST Services Seamlessly</h3>
+                    <p class="fragment">prepare a dummy new version image</p>
+                    <pre class="fragment"><code>
+docker tag rest-node rest-node:new
+docker push rest-node:new
+                    </code></pre>
+                    <p class="fragment">update strategy of service</p>
+                    <pre class="fragment"><code>
+docker service update rest-multinodes --update-delay 20s --update-parallelism 1                    
+                    </code></pre>                    
+                </section>
+                <section>
+                    <h3>Upgrade REST Services Seamlessly (cont.)</h3>
+                    <p class="fragment">kick off upgrading</p>
+                    <pre class="fragment"><code>
+docker service update --image rest-node:new rest-multimodes                        
+                    </code></pre>
+                    <p class="fragment">check the upgrading process</p>
+                    <pre class="fragment"><code>
+docker service ps rest-multinodes
+                    </code></pre>
+                </section>
+            </section>
+            <section>
+                <h3>REST Services - HA</h3>
+                <ul>
+                    <li class="fragment">container is down</li>
+                    <pre class="fragment"><code>
+docker kill ...
+                    </code></pre>
+                    <li class="fragment">swarm nodes break down (docker down or server down)</li>
+                    <pre><code>
+sudo service docker stop                        
+                    </code></pre>
+                </ul>
             </section>
             
         </div>
