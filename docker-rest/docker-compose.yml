@@ -1,0 +1,71 @@
+version: '2'
+services:
+  cs:
+    image: 10.62.87.31:5000/subbu/ubuntupgrccs 
+    ports: 
+      - "1689:1689"
+      - "1690:1690"
+      - "50000:50000"
+      - "50001:50001"
+      - "9080:9080"
+      - "9082:9082"
+      - "8489:8489"     
+    privileged: true
+    container_name: ubuntupgcs
+    hostname: ubuntupgcs
+    command: /bin/bash -c "./start-db ${ExternalIP}"
+  rest:
+    image: 10.62.87.31:5000/restapi/ubuntu/stateless/restapi
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    container_name: rest
+    hostname: rest
+    volumes: 
+      - ./rest/config:/root/rest/config
+      - ./rest/logs:/root/rest/logs
+    links:
+      - cs
+    depends_on:
+      - cs
+  primary: 
+    image: 10.62.87.31:5000/xplore/ubuntu/stateless/xplore
+    hostname: primary
+    container_name: primary
+    ports:
+      - "9300:9300"
+    volumes:
+      - xplore:/root/xPlore/rtdata
+    depends_on:
+      - cs
+  cps:
+    image: 10.62.87.31:5000/xplore/ubuntu/stateless/xplore
+    hostname: cps
+    container_name: cps
+    environment:
+      - role=cps
+      - primary_addr=primary
+    depends_on:
+      - primary
+  indexagent:
+    image: 10.62.87.31:5000/indexagent/ubuntu/stateless/indexagent
+    hostname: indexagent
+    container_name: indexagent
+    ports:
+      - "9200:9200"
+    environment:
+      - primary_addr=primary
+      - docbase_name=ubuntudb
+      - docbase_user=dmadmin
+      - docbase_password=password
+      - broker_host=ubuntupgcs
+      - broker_port=1489
+      - registry_name=ubuntudb
+      - registry_user=dm_bof_registry
+      - registry_password=password
+    depends_on:
+      - primary
+    volumes_from:
+      - primary
+volumes:
+  xplore: {}

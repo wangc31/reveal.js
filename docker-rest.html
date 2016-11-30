@@ -257,7 +257,26 @@ curl -k https://dmadmin:password@localhost:8443/dctm-rest/repositories/REPO
                 </code></pre>
             </section>
             <section>
-                TODO docker compose
+                <section>
+                    <h3>Integrating with Content Server Image</h3>
+                    <p class="fragment">there are two Content Server images</p>    
+                </section>
+                <section>
+                    <h4>Stateless Image</h4>
+                    <p class="fragment">Docker Compose</p>
+                    <ul>
+                        <li class="fragment">postgresql in container</li>
+                        <li class="fragment">REST in container</li>
+                    </ul>
+                    <p class="fragment">find details at <a href="https://iigwiki.corp.emc.com:8443/pages/viewpage.action?pageId=66847750">here</a></p>
+                    <i class="fragment">it could take more than 30 minutes to launch</i>
+                </section>
+                <section>
+                    <h4>All-in-one Image</h4>
+                    <p class="fragment">not officially supported but quite useful</p>
+                    <p class="fragment">get suite of Content Server/xPlore/REST in 10 minutes</p>
+                    <a class="fragment" href="docker-rest/docker-compose.yml">docker-compose file</a><span class="fragment"> and <a href="cs-xplore-rest.sh">launching script</a></span>
+                </section>
             </section>
             <section>
                 <section>
@@ -368,12 +387,16 @@ docker service ps rest-multinodes
 docker kill ...
                     </code></pre>
                     <li class="fragment">swarm nodes break down (docker down or server down)</li>
-                    <pre><code>
+                    <pre class="fragment"><code>
 sudo service docker stop                        
                     </code></pre>
                 </ul>
             </section>
-            
+            <section>
+                <h3>SAML 2.0 is new authentication schema supported in 7.3</h3>
+                <p class="fragment">useful but complicated and not easy to set up</p>
+                <img class="fragment" src="docker-rest/saml.png" alt="saml process">
+            </section>
         </div>
     </div>
     <script src="lib/js/head.min.js"></script>
