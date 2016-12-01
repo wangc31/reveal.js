@@ -41,34 +41,34 @@
                 <h2>Traditional way to deliver REST</h2>
                 <p class="fragment">WEB ARchive (WAR)</p>
                 <img width="50%" height="50%" class="fragment" data-src="docker-rest/rest-deliver.png">
-                <p class="fragment">it's just the begining of the story</p>
+                <p class="fragment">it's just the beginning of the story</p>
                 <p class="fragment">...</p>
             </section>
             <section>
                 <section>
-                    <h3>Release Notes tell us</h3>
+                    <h2>Release Notes tell us</h2>
                     <p>many constraints about deploying REST</p>
                 </section>
                 <section>
-                    <h4>OS requirements</h4>
+                    <h3>OS requirements</h3>
                     <img class="fragment" src="docker-rest/os-req.png">
                 </section>
                 <section>
-                    <h4>Web application server requirements</h4>
+                    <h3>Web application server requirements</h3>
                     <img width="80%" height="80%" class="fragment" src="docker-rest/web-server-req.png">
                     <p class="fragment">...</p>
                 </section>
                 <section>
-                    <h4>Web app server configuration</h4>
+                    <h3>Web app server configuration</h3>
                     <img src="docker-rest/tomcat-config.png">
                 </section>
                 <section>
-                    <h4>JAVA</h4>
+                    <h3>JAVA</h3>
                     <p class="fragment">version and vendor</p>
                 </section>
             </section>
             <section>
-                <h3>Before REST running</h3>
+                <h2>Before REST running</h2>
                 <ol>
                     <li class="fragment">prepare OS</li>
                     <li class="fragment">download and install Java</li>
@@ -85,7 +85,18 @@
                 <p class="fragment">cheap</p>
             </section>
             <section>
-                <h3>Dockerizing REST - Why</h3>
+                <h2>Agenda</h2>
+                <ul>
+                    <li>why ()</li>
+                    <li>what ()</li>
+                    <li>how ()</li>
+                    <li>one-stop solution ()</li>
+                    <li>scalabilty/LB/HA/upgrade ()</li>
+                    <li>Dockerized SAML suite ()</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Dockerizing REST - Why</h2>
                 <p class="fragment">REST is stateless</p>
                 <p class="fragment">local development and test</p>
                 <p class="fragment">CI</p>
@@ -94,52 +105,53 @@
             </section>
             <section>
                 <section>
-                    <h3>Dockerizing REST - What</h3>
-                    <p class="fragment grow highlight-blue">complex configuration</p>
-                    <p>logging</p>
-                    <p>Operating System/Java Verson and Vendor/Web App Server</p>
-                    <p>SSL support</p>
-                </section>
-                <section>
-                    <h4>complex configuration</h4>
-                    <p class="fragment"><a href="docker-rest/rest-api-runtime.properties.template">rest-api-runtime.properties</a><span class="fragment"> - 100+ options</span></p>
-                    <p class="fragment"><a href="docker-rest/dfcfull.properties">rest-api-runtime.properties</a><span class="fragment fade-up"> - about 170 options</span></p>
-                    <i class="fragment">docker environment variables are not sufficient</i>
-                </section>
-                <section>
-                    <h3>Dockerizing REST - What</h3>
+                    <h2>Dockerizing REST - What</h2>
+                    <p class="fragment grow highlight-blue">host environment</p>
                     <p>complex configuration</p>
-                    <p class="fragment grow highlight-blue">logging</p>
-                    <p>Operating System/Java Verson and Vendor/Web App Server</p>
+                    <p>logging</p>                   
                     <p>SSL support</p>
                 </section>
                 <section>
-                    <h4>logging</h4>
-                    <p class="fragment fade-right">logging is important for troubleshooting</p>
-                    <p class="fragment fade-left">logs should be persisted</p>
-                </section>
-                <section>
-                    <h3>Dockerizing REST - What</h3>
-                    <p>complex configuration</p>
-                    <p>logging</p>
-                    <p class="fragment grow highlight-blue">Operating System/Java Verson and Vendor/Web App Server</p>
-                    <p>SSL support</p>
-                </section>
-                <section>
-                    <h4>environment</h4>
+                    <h3>host environment</h3>
                     <p class="fragment fade-right">OpenJDK 1.8</p>
                     <p class="fragment fade-left">Tomcat 8.0</p>
                     <p class="fragment fade-left">Ubuntu 16.04 and CentOS 7</p>
                 </section>
                 <section>
-                    <h3>Dockerizing REST - What</h3>
+                    <h2>Dockerizing REST - What</h2>
+                    <p>host environment</p>
+                    <p class="fragment grow highlight-blue">complex configuration</p>
+                    <p>logging</p>                   
+                    <p>SSL support</p>
+                </section>
+                
+                <section>
+                    <h3>complex configuration</h3>
+                    <p class="fragment"><a href="docker-rest/rest-api-runtime.properties.template">rest-api-runtime.properties</a><span class="fragment"> - 100+ options</span></p>
+                    <p class="fragment"><a href="docker-rest/dfcfull.properties">dfc.properties</a><span class="fragment fade-up"> - about 170 options</span></p>
+                    <i class="fragment">docker environment variables are not sufficient</i>
+                </section>
+                <section>
+                    <h2>Dockerizing REST - What</h2>
+                    <p>host environment</p>
                     <p>complex configuration</p>
-                    <p>logging</p>
-                    <p>Operating System/Java Verson and Vendor/Web App Server</p>
+                    <p class="fragment grow highlight-blue">logging</p>                   
+                    <p>SSL support</p>
+                </section>
+                <section>
+                    <h3>logging</h3>
+                    <p class="fragment fade-right">logging is important for troubleshooting</p>
+                    <p class="fragment fade-left">logs should be persisted</p>
+                </section>
+                <section>
+                    <h2>Dockerizing REST - What</h2>
+                    <p>host environment</p>
+                    <p>complex configuration</p>
+                    <p>logging</p>                   
                     <p class="fragment grow highlight-blue">SSL support</p>
                 </section>
                 <section>
-                    <h4>SSL support</h4>
+                    <h3>SSL support</h3>
                     <p class="fragment">keystore location</p>
                     <p class="fragment">keystore password</p>
                     <p class="fragment">key entry</p>
@@ -152,7 +164,8 @@
                 <p>and come back to answer these questions</p>
             </section>
             <section>
-                <h2>Run REST container</h2>
+                <section>
+                    <h2>Run REST container</h2> 
                 <ol>
                     <li class="fragment">load REST image</li>
                     <pre class="fragment"><code class="hljs" data-trim contenteditable>
@@ -176,26 +189,40 @@ docker run --name rest -p 8080:8080 -d \
 curl http://dmadmin:password@localhost:8080/dctm-rest/repositories/REPO
                     </code></pre>
                 </ol>
+                </section>
+                <section>
+                    <h2>Practice</h2>
+                    <p>5 minutes</p>
+                </section>
             </section>
             <section>
                 <h3>Check logs</h3>
                 <p class="fragment fade-left">in `pwd`/logs</p>
             </section>
             <section>
-                <h3>what if re-configure?</h3>
+                <h2>what if re-configure?</h2>
                 <p class="fragment">modify configuration and restart the container</p>
                 <pre class="fragment"><code class="hljs" data-trim contenteditable>
-vi config/log4j.properties
-vi config/dfc.properties
+vi rest-api-runtime.properties
+#rest.security.auth.mode=basic-ct
+
 docker restart rest
-                    </code></pre>
+                </code></pre>
+                <p class="fragment">verify the client token in response</p>
+                <pre class="fragment"><code>
+curl -v http://dmadmin:password@localhost:8080/dctm-rest/repositories/[REPO]
+
+...
+Set-Cookie: DOCUMENTUM-CLIENT-TOKEN=xxxxxxx
+...
+                </code></pre>
             </section>
             <section data-background="#000000" data-background-transition="zoom">
-                <h3>Dockerizing REST - How</h3>
+                <h2>Dockerizing REST - How</h2>
                 <a href="docker-rest/design.png"><img width="70%" class="fragment" src="docker-rest/design.png" alt=""></a>
             </section>
             <section>
-                <h4>Dockerfile</h4>
+                <h2>Dockerfile</h2>
                 <i><a href="docker-rest/Dockerfile-ubuntu1604">Dockerfile for ubuntu 16.04</a></i>
                 <pre><code class="hljs" data-trim contenteditable>
 FROM ubuntu:16.04
@@ -258,25 +285,38 @@ curl -k https://dmadmin:password@localhost:8443/dctm-rest/repositories/REPO
             </section>
             <section>
                 <section>
-                    <h3>Integrating with Content Server Image</h3>
-                    <p class="fragment">there are two Content Server images</p>    
+                    <h2>Integrating with Content Server Image</h2>
+                    <ul>
+                        <li class="fragment">REST is natively working with CS</li>
+                        <li class="fragment">Dockerized REST + Dockerized CS = ?</li>
+                        <ul>
+                            <li class="fragment">associated configrations are well handled</li>
+                            <li class="fragment">avoid mistakes during complicated manual deploying</li>
+                            <li class="fragment">save much more effort and time</li>
+                        </ul>
+                    </ul>
+                    <br><br>
+                    <p><i class="fragment">there are two Content Server images</i></p>
                 </section>
                 <section>
-                    <h4>Stateless Image</h4>
+                    <h3>Stateless Image</h3>
                     <p class="fragment">Docker Compose</p>
                     <ul>
                         <li class="fragment">postgresql in container</li>
                         <li class="fragment">REST in container</li>
                     </ul>
-                    <p class="fragment">find details at <a href="https://iigwiki.corp.emc.com:8443/pages/viewpage.action?pageId=66847750">here</a></p>
+                    <p class="fragment">find details <a href="https://iigwiki.corp.emc.com:8443/pages/viewpage.action?pageId=66847750">here</a></p>
                     <i class="fragment">it could take more than 30 minutes to launch</i>
                 </section>
                 <section>
-                    <h4>All-in-one Image</h4>
+                    <h3>All-in-one Image</h3>
                     <p class="fragment">not officially supported but quite useful</p>
                     <p class="fragment">get suite of Content Server/xPlore/REST in 10 minutes</p>
                     <a class="fragment" href="docker-rest/docker-compose.yml">docker-compose file</a><span class="fragment"> and <a href="cs-xplore-rest.sh">launching script</a></span>
                 </section>
+            </section>
+            <section>
+                <p>TODO recap</p>
             </section>
             <section>
                 <section>
@@ -295,7 +335,7 @@ curl -k https://dmadmin:password@localhost:8443/dctm-rest/repositories/REPO
                 </section>
             </section>
             <section>
-                <h3>Swarm Preparation</h3>
+                <h2>Swarm Preparation</h2>
                 <ol>
                     <li class="fragment">on one Docker host</li>
                     <pre class="fragment"><code>docker swarm init</code></pre>
@@ -305,12 +345,12 @@ curl -k https://dmadmin:password@localhost:8443/dctm-rest/repositories/REPO
                 </ol>
             </section>
             <section>
-                <h3>Mapping Configuration Files Cross Nodes</h3>
+                <h2>Mapping Configuration Files Cross Nodes</h2>
                 <p class="fragment">network dirver or third-party solution (like <a href="https://clusterhq.com/flocker/introduction/">flocker</a>)</p>
                 <b class="fragment"><i>here we will burn the configuration files in the image</i></b>
             </section>
             <section>
-                <h3>Burn Configuration Files</h3>
+                <h2>Burn Configuration Files</h2>
                 <pre><code>
 FROM restapi_ubuntu:7.3.0000.0590
 #config directory containing the necessary configuration files
@@ -325,7 +365,7 @@ docker push rest-node
                 </code></pre>
             </section>
             <section>
-                <h3>Initiate REST Services on Multiple Nodes</h3>
+                <h2>Initiate REST Services on Multiple Nodes</h2>
                 <pre class="fragment"><code>
 docker service create --replicas 2 --name rest-multinodes -p 8080:8080 rest-node                    
                 </code></pre>
@@ -336,17 +376,17 @@ docker service ps rest-multinodes
                 </code></pre>
             </section>
             <section>
-                <h3>Consume REST Services</h3>
+                <h2>Consume REST Services</h2>
                 <pre class="fragment"><code>
 curl http://[NODE_IP]:8080/dctm-rest/repositories/                    
                 </code></pre>
             </section>
             <section data-background="#ffffff">
-                <h3 style="color: black">Topology</h3>
+                <h2 style="color: black">Topology</h2>
                 <img src="docker-rest/swarm-lb.png" alt="swarm load balancing">
             </section>
             <section>
-                <h3>Scale REST Services</h3>
+                <h2>Scale REST Services</h2>
                 <pre class="fragment"><code>
 docker service scale rest-multinodes=3                    
                 </code></pre>
@@ -356,7 +396,7 @@ docker service ls
             </section>
             <section>
                 <section>
-                    <h3>Upgrade REST Services Seamlessly</h3>
+                    <h2>Upgrade REST Services Seamlessly</h2>
                     <p class="fragment">prepare a dummy new version image</p>
                     <pre class="fragment"><code>
 docker tag rest-node rest-node:new
@@ -368,7 +408,7 @@ docker service update rest-multinodes --update-delay 20s --update-parallelism 1
                     </code></pre>                    
                 </section>
                 <section>
-                    <h3>Upgrade REST Services Seamlessly (cont.)</h3>
+                    <h2>Upgrade REST Services Seamlessly (cont.)</h2>
                     <p class="fragment">kick off upgrading</p>
                     <pre class="fragment"><code>
 docker service update --image rest-node:new rest-multimodes                        
@@ -380,7 +420,7 @@ docker service ps rest-multinodes
                 </section>
             </section>
             <section>
-                <h3>REST Services - HA</h3>
+                <h2>REST Services - HA</h2>
                 <ul>
                     <li class="fragment">container is down</li>
                     <pre class="fragment"><code>
@@ -393,9 +433,88 @@ sudo service docker stop
                 </ul>
             </section>
             <section>
-                <h3>SAML 2.0 is new authentication schema supported in 7.3</h3>
+                <h2>SAML 2.0 is new authn schema in 7.3</h2>
                 <p class="fragment">useful but complicated and not easy to set up</p>
                 <img class="fragment" src="docker-rest/saml.png" alt="saml process">
+            </section>
+            <section>
+                <h2>chanlleges of SAML setup</h2>
+                <ul>
+                    <li class="fragment">many services in topology... CS, LDAP, IdP, SP</li>
+                    <li class="fragment">configurations for services are associated with each other</li>
+                    <li class="fragment">difficult to verify whether each configure step is correct or not</li>
+                </ul>
+            </section>
+            <section>
+                <section>
+                    <h2>Dockerized SAML Suite</h2>
+                    <ol>
+                        <li>launch CS container</li>
+                        <li><a href="#/28/1">create a SAML user in CS (user_source is dm_saml)</a></li>
+                        <li><a href="#/28/2">copy signing cert of IdP to CS</a></li>
+                        <li>edit the dfc.properties for REST Services</li>
+                        <li>start the docker compose</li>
+                    </ol>
+                </section>
+                <section>
+                    <a href="#/28">back</a>
+                    <pre><code>
+docker exec -it cs bash
+source .../dm_set_server_env.sh
+iapi                        
+
+create,c,dm_user
+set,c,l,user_name
+samler
+set,c,l,user_login_name
+samler
+set,c,l,user_password
+password
+set,c,l,user_source
+dm_saml
+set,c,l,user_privileges
+16
+save,c,l
+                    </code></pre>
+                </section>
+                <section>     
+                    <a href="#/28">back</a>
+                    <pre><code>
+docker exec -it cs bash
+vi .../saml.properties                    
+docker cp idp/shibboleth-idp/credentials/idp-signing.crt centstateless:/home/saml
+                    </code></pre>
+                </section>
+
+            </section>
+            <section>
+                <h2>Validate SAML Authentication</h2>
+                <ul>
+                    <li>login client container - <i>http://[DOCKER_HOST]:6080/vnc.html</i></li>
+                    <li>visit - <i>https://rest-docker:8443/dctm-rest/repositories/[REPO]</i></li>
+                    <li>default user samler/passw0rd</li>
+                </ul>
+            </section>
+            <section>
+                    <h2>Customize SAML configuration</h2>
+                    <ul>
+                        <li>Tomcat ssl keystore file</li>
+                        <li>REST signing keystore file and entry</li>
+                        <li>REST domain name</li>
+                        <li>LDAP pre-loaded users</li>
+                        <li>IdP communication certificate</li>
+                        <li>IdP domain name</li>    
+                    </ul>               
+                    <p class="fragment">find details <a href="https://iigwiki.corp.emc.com:8443/display/CMAAT/Docker+Elaboration#DockerElaboration-Customization">here</a></p>
+            </section>
+            <section>
+                <p>TODO recap</p>
+            </section>
+            <section>
+                <h2>Q&A</h2>
+            </section>
+            <section>
+                <h2>Thanks</h2>
             </section>
         </div>
     </div>
