@@ -87,6 +87,7 @@
             <section>
                 <h2>Agenda</h2>
                 <ul>
+                <!-- todo -->
                     <li>why ()</li>
                     <li>what ()</li>
                     <li>how ()</li>
@@ -108,7 +109,7 @@
                     <h2>Dockerizing REST - What</h2>
                     <p class="fragment grow highlight-blue">host environment</p>
                     <p>complex configuration</p>
-                    <p>logging</p>                   
+                    <p>logging</p>
                     <p>SSL support</p>
                 </section>
                 <section>
@@ -121,10 +122,10 @@
                     <h2>Dockerizing REST - What</h2>
                     <p>host environment</p>
                     <p class="fragment grow highlight-blue">complex configuration</p>
-                    <p>logging</p>                   
+                    <p>logging</p>
                     <p>SSL support</p>
                 </section>
-                
+
                 <section>
                     <h3>complex configuration</h3>
                     <p class="fragment"><a href="docker-rest/rest-api-runtime.properties.template">rest-api-runtime.properties</a><span class="fragment"> - 100+ options</span></p>
@@ -135,7 +136,7 @@
                     <h2>Dockerizing REST - What</h2>
                     <p>host environment</p>
                     <p>complex configuration</p>
-                    <p class="fragment grow highlight-blue">logging</p>                   
+                    <p class="fragment grow highlight-blue">logging</p>
                     <p>SSL support</p>
                 </section>
                 <section>
@@ -147,7 +148,7 @@
                     <h2>Dockerizing REST - What</h2>
                     <p>host environment</p>
                     <p>complex configuration</p>
-                    <p>logging</p>                   
+                    <p>logging</p>
                     <p class="fragment grow highlight-blue">SSL support</p>
                 </section>
                 <section>
@@ -165,7 +166,7 @@
             </section>
             <section>
                 <section>
-                    <h2>Run REST container</h2> 
+                    <h2>Run REST container</h2>
                 <ol>
                     <li class="fragment">load REST image</li>
                     <pre class="fragment"><code class="hljs" data-trim contenteditable>
@@ -191,7 +192,7 @@ curl http://dmadmin:password@localhost:8080/dctm-rest/repositories/REPO
                 </ol>
                 </section>
                 <section>
-                    <h2>Practice</h2>
+                    <h2>Practice #1</h2>
                     <p>5 minutes</p>
                 </section>
             </section>
@@ -200,22 +201,28 @@ curl http://dmadmin:password@localhost:8080/dctm-rest/repositories/REPO
                 <p class="fragment fade-left">in `pwd`/logs</p>
             </section>
             <section>
-                <h2>what if re-configure?</h2>
-                <p class="fragment">modify configuration and restart the container</p>
-                <pre class="fragment"><code class="hljs" data-trim contenteditable>
-vi rest-api-runtime.properties
-#rest.security.auth.mode=basic-ct
+                <section>
+                    <h2>what if re-configure?</h2>
+                    <p class="fragment">modify configuration and restart the container</p>
+                    <pre class="fragment"><code class="hljs" data-trim contenteditable>
+    vi rest-api-runtime.properties
+    #rest.security.auth.mode=basic-ct
 
-docker restart rest
-                </code></pre>
-                <p class="fragment">verify the client token in response</p>
-                <pre class="fragment"><code>
-curl -v http://dmadmin:password@localhost:8080/dctm-rest/repositories/[REPO]
+    docker restart rest
+                    </code></pre>
+                    <p class="fragment">verify the client token in response</p>
+                    <pre class="fragment"><code>
+    curl -v http://dmadmin:password@localhost:8080/dctm-rest/repositories/[REPO]
 
-...
-Set-Cookie: DOCUMENTUM-CLIENT-TOKEN=xxxxxxx
-...
-                </code></pre>
+    ...
+    Set-Cookie: DOCUMENTUM-CLIENT-TOKEN=xxxxxxx
+    ...
+                    </code></pre>
+                </section>
+                <section>
+                    <h2>Practice #2</h2>
+                    <p>3 minutes</p>
+                </section>
             </section>
             <section data-background="#000000" data-background-transition="zoom">
                 <h2>Dockerizing REST - How</h2>
@@ -257,31 +264,37 @@ rm -rf ${CATALINA_HOME}/webapps/ROOT
                 <p class="fragment">5 more environment variables</p>
                 <pre class="fragment"><code class="hljs" data-trim contenteditable>
 -e COMM_KEYSTORE_FILE=...
--e COMM_KEYSTORE_PWD=... 
--e COMM_KEY_ALIAS=... 
--e COMM_KEY_PWD=... 
--e COMM_KEY_STORE_TYPE=... 
+-e COMM_KEYSTORE_PWD=...
+-e COMM_KEY_ALIAS=...
+-e COMM_KEY_PWD=...
+-e COMM_KEY_STORE_TYPE=...
                 </code></pre>
             </section>
             <section>
-                <h2>REST with HTTPS (cont.)</h2>
-                <pre class="fragment"><code class="hljs" data-trim contenteditable>
-keytool -genkey -alias tomcat -keyalg RSA -keystore ./myks
-                </code></pre>
-                <pre class="fragment"><code class="hljs" data-trim contenteditable>
-docker run --name rest -p 8080:8080 -d \
-    -v `pwd`/config:/root/rest/config \
-    -v `pwd`/logs:/root/rest/logs 
-    -e COMM_KEYSTORE_FILE=/root/rest/config/security/myks \
-    -e COMM_KEYSTORE_PWD=password \
-    -e COMM_KEY_ALIAS=tomcat \
-    -e COMM_KEY_PWD=password \
-    -e COMM_KEY_STORE_TYPE=JKS \
-    restapi_ubuntu:7.3.0000.0590
-                </code></pre>
-                <pre class="fragment"><code>
-curl -k https://dmadmin:password@localhost:8443/dctm-rest/repositories/REPO
-                </code></pre>
+                <section>
+                    <h2>REST with HTTPS (cont.)</h2>
+                    <pre class="fragment"><code class="hljs" data-trim contenteditable>
+    keytool -genkey -alias tomcat -keyalg RSA -keystore ./myks
+                    </code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim contenteditable>
+    docker run --name rest -p 8080:8080 -d \
+        -v `pwd`/config:/root/rest/config \
+        -v `pwd`/logs:/root/rest/logs
+        -e COMM_KEYSTORE_FILE=/root/rest/config/security/myks \
+        -e COMM_KEYSTORE_PWD=password \
+        -e COMM_KEY_ALIAS=tomcat \
+        -e COMM_KEY_PWD=password \
+        -e COMM_KEY_STORE_TYPE=JKS \
+        restapi_ubuntu:7.3.0000.0590
+                    </code></pre>
+                    <pre class="fragment"><code>
+    curl -k https://dmadmin:password@localhost:8443/dctm-rest/repositories/REPO
+                    </code></pre>
+                </section>
+                <section>
+                    <h2>Practice #3</h2>
+                    <p>3 minutes</p>
+                </section>
             </section>
             <section>
                 <section>
@@ -314,9 +327,26 @@ curl -k https://dmadmin:password@localhost:8443/dctm-rest/repositories/REPO
                     <p class="fragment">get suite of Content Server/xPlore/REST in 10 minutes</p>
                     <a class="fragment" href="docker-rest/docker-compose.yml">docker-compose file</a><span class="fragment"> and <a href="cs-xplore-rest.sh">launching script</a></span>
                 </section>
+                <section>
+                    <h2>Practice #4</h2>
+                    <p>after the session</p>
+                </section>
             </section>
             <section>
-                <p>TODO recap</p>
+                <h2>Recap - Foundation of Dockerized REST</h2>
+                <ul>
+                    <li class="fragment">motivation and solution</li>
+                    <li class="fragment">how to start REST container</li>
+                    <li class="fragment">enable HTTPS communication</li>
+                    <li class="fragment">integrated with Content Server</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Advanced Topics</h2>
+                <h4 class="fragment">scalability</h4>
+                <h4 class="fragment">load balance</h4>
+                <h4 class="fragment">high availability</h4>
+                <h4 class="fragment">extended usage in typical scenario</h4>
             </section>
             <section>
                 <section>
@@ -354,31 +384,31 @@ curl -k https://dmadmin:password@localhost:8443/dctm-rest/repositories/REPO
                 <pre><code>
 FROM restapi_ubuntu:7.3.0000.0590
 #config directory containing the necessary configuration files
-COPY config/ ${CONFIG_DIR}/                    
+COPY config/ ${CONFIG_DIR}/
                 </code></pre>
                 <pre><code>
-docker build -t rest-node .                    
+docker build -t rest-node .
                 </code></pre>
                 <p class="fragment">push image to registry so that all swarm ndoes can get image</p>
                 <pre class="fragment"><code>
-docker push rest-node                    
+docker push rest-node
                 </code></pre>
             </section>
             <section>
                 <h2>Initiate REST Services on Multiple Nodes</h2>
                 <pre class="fragment"><code>
-docker service create --replicas 2 --name rest-multinodes -p 8080:8080 rest-node                    
+docker service create --replicas 2 --name rest-multinodes -p 8080:8080 rest-node
                 </code></pre>
                 <p class="fragment">check the service</p>
                 <pre class="fragment"><code>
-docker service ls                 
-docker service ps rest-multinodes   
+docker service ls
+docker service ps rest-multinodes
                 </code></pre>
             </section>
             <section>
                 <h2>Consume REST Services</h2>
                 <pre class="fragment"><code>
-curl http://[NODE_IP]:8080/dctm-rest/repositories/                    
+curl http://[NODE_IP]:8080/dctm-rest/repositories/
                 </code></pre>
             </section>
             <section data-background="#ffffff">
@@ -388,10 +418,10 @@ curl http://[NODE_IP]:8080/dctm-rest/repositories/
             <section>
                 <h2>Scale REST Services</h2>
                 <pre class="fragment"><code>
-docker service scale rest-multinodes=3                    
+docker service scale rest-multinodes=3
                 </code></pre>
                 <pre class="fragment"><code>
-docker service ls                   
+docker service ls
                 </code></pre>
             </section>
             <section>
@@ -404,14 +434,14 @@ docker push rest-node:new
                     </code></pre>
                     <p class="fragment">update strategy of service</p>
                     <pre class="fragment"><code>
-docker service update rest-multinodes --update-delay 20s --update-parallelism 1                    
-                    </code></pre>                    
+docker service update rest-multinodes --update-delay 20s --update-parallelism 1
+                    </code></pre>
                 </section>
                 <section>
                     <h2>Upgrade REST Services Seamlessly (cont.)</h2>
                     <p class="fragment">kick off upgrading</p>
                     <pre class="fragment"><code>
-docker service update --image rest-node:new rest-multimodes                        
+docker service update --image rest-node:new rest-multimodes
                     </code></pre>
                     <p class="fragment">check the upgrading process</p>
                     <pre class="fragment"><code>
@@ -428,7 +458,7 @@ docker kill ...
                     </code></pre>
                     <li class="fragment">swarm nodes break down (docker down or server down)</li>
                     <pre class="fragment"><code>
-sudo service docker stop                        
+sudo service docker stop
                     </code></pre>
                 </ul>
             </section>
@@ -461,7 +491,7 @@ sudo service docker stop
                     <pre><code>
 docker exec -it cs bash
 source .../dm_set_server_env.sh
-iapi                        
+iapi
 
 create,c,dm_user
 set,c,l,user_name
@@ -477,11 +507,11 @@ set,c,l,user_privileges
 save,c,l
                     </code></pre>
                 </section>
-                <section>     
+                <section>
                     <a href="#/28">back</a>
                     <pre><code>
 docker exec -it cs bash
-vi .../saml.properties                    
+vi .../saml.properties
 docker cp idp/shibboleth-idp/credentials/idp-signing.crt centstateless:/home/saml
                     </code></pre>
                 </section>
@@ -503,12 +533,26 @@ docker cp idp/shibboleth-idp/credentials/idp-signing.crt centstateless:/home/sam
                         <li>REST domain name</li>
                         <li>LDAP pre-loaded users</li>
                         <li>IdP communication certificate</li>
-                        <li>IdP domain name</li>    
-                    </ul>               
+                        <li>IdP domain name</li>
+                    </ul>
                     <p class="fragment">find details <a href="https://iigwiki.corp.emc.com:8443/display/CMAAT/Docker+Elaboration#DockerElaboration-Customization">here</a></p>
             </section>
             <section>
-                <p>TODO recap</p>
+                <h2></h2>
+                <ul>
+                    <li class="fragment">leverage Docker built-in features to construct powerful container cluster</li>
+                        <ul>
+                            <li class="fragment">burn essential configuration to extend the image</li>
+                            <li class="fragment">swarm</li>
+                        </ul>
+                    <li class="fragment">demostrate the usage of Dockerized REST in "real" scenario</li>
+                        <ul>
+                            <li class="fragment">well made images</li>
+                            <li class="fragment">scripts to coordinate the associated configurations</li>
+                            <li class="fragment">simply the interface for end users</li>
+                            <li class="fragment">make good use of docker-compose</li>
+                        </ul>
+                </ul>
             </section>
             <section>
                 <h2>Q&A</h2>
