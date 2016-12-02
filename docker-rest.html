@@ -199,16 +199,19 @@ curl http://dmadmin:password@localhost:8080/dctm-rest/repositories/REPO
             <section>
                 <h3>Check logs</h3>
                 <p class="fragment fade-left">in `pwd`/logs</p>
+                <b class="fragment"><i>forget to persist logs...</i></b>
             </section>
             <section>
                 <section>
                     <h2>what if re-configure?</h2>
                     <p class="fragment">modify configuration and restart the container</p>
                     <pre class="fragment"><code class="hljs" data-trim contenteditable>
-    vi rest-api-runtime.properties
-    #rest.security.auth.mode=basic-ct
+vi log4j.properties
 
-    docker restart rest
+vi rest-api-runtime.properties
+#rest.security.auth.mode=basic-ct
+
+docker restart rest
                     </code></pre>
                     <p class="fragment">verify the client token in response</p>
                     <pre class="fragment"><code>
@@ -218,6 +221,7 @@ curl http://dmadmin:password@localhost:8080/dctm-rest/repositories/REPO
     Set-Cookie: DOCUMENTUM-CLIENT-TOKEN=xxxxxxx
     ...
                     </code></pre>
+                    <p class="fragment">check logs</p>
                 </section>
                 <section>
                     <h2>Practice #2</h2>
@@ -277,9 +281,9 @@ rm -rf ${CATALINA_HOME}/webapps/ROOT
     keytool -genkey -alias tomcat -keyalg RSA -keystore ./myks
                     </code></pre>
                     <pre class="fragment"><code class="hljs" data-trim contenteditable>
-    docker run --name rest -p 8080:8080 -d \
+    docker run --name rest -p 8080:8080 -p 8443:8443 -d \
         -v `pwd`/config:/root/rest/config \
-        -v `pwd`/logs:/root/rest/logs
+        -v `pwd`/logs:/root/rest/logs \
         -e COMM_KEYSTORE_FILE=/root/rest/config/security/myks \
         -e COMM_KEYSTORE_PWD=password \
         -e COMM_KEY_ALIAS=tomcat \
@@ -325,7 +329,7 @@ rm -rf ${CATALINA_HOME}/webapps/ROOT
                     <h3>All-in-one Image</h3>
                     <p class="fragment">not officially supported but quite useful</p>
                     <p class="fragment">get suite of Content Server/xPlore/REST in 10 minutes</p>
-                    <a class="fragment" href="docker-rest/docker-compose.yml">docker-compose file</a><span class="fragment"> and <a href="cs-xplore-rest.sh">launching script</a></span>
+                    <a class="fragment" href="docker-rest/docker-compose.yml">docker-compose file</a><span class="fragment"> and <a href="docker-rest/cs-xplore-rest.sh">launching script</a></span>
                 </section>
                 <section>
                     <h2>Practice #4</h2>
@@ -462,6 +466,10 @@ sudo service docker stop
                     </code></pre>
                 </ul>
             </section>
+                <section>
+                <h2>Practice #5</h2>
+                <p>after session</p>
+            </section>
             <section>
                 <h2>SAML 2.0 is new authn schema in 7.3</h2>
                 <p class="fragment">useful but complicated and not easy to set up</p>
@@ -480,8 +488,8 @@ sudo service docker stop
                     <h2>Dockerized SAML Suite</h2>
                     <ol>
                         <li>launch CS container</li>
-                        <li><a href="#/28/1">create a SAML user in CS (user_source is dm_saml)</a></li>
-                        <li><a href="#/28/2">copy signing cert of IdP to CS</a></li>
+                        <li><a href="#/32/1">create a SAML user in CS (user_source is dm_saml)</a></li>
+                        <li><a href="#/32/2">modify SAML configuration of CS and copy signing cert of IdP to CS</a></li>
                         <li>edit the dfc.properties for REST Services</li>
                         <li>start the docker compose</li>
                     </ol>
@@ -524,6 +532,10 @@ docker cp idp/shibboleth-idp/credentials/idp-signing.crt centstateless:/home/sam
                     <li>visit - <i>https://rest-docker:8443/dctm-rest/repositories/[REPO]</i></li>
                     <li>default user samler/passw0rd</li>
                 </ul>
+            </section>
+            <section>
+                <h2>Practice #6</h2>
+                <p>10 minutes/if we have time</p>
             </section>
             <section>
                     <h2>Customize SAML configuration</h2>
