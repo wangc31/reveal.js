@@ -183,7 +183,10 @@ In this practice, we will enable SSL for REST services.
    ```
    mkdir -p ~/docker-ispecialist/rest/config/security
    ```
-
+   and recover _rest-api-runtime.properties_
+   ```
+   echo "" > ~/docker-ispecialist/rest/config/rest-api-runtime.properties
+   ```
    ​
 
 2. generate a keystore and key entry
@@ -248,79 +251,80 @@ Actually this practice could include xPlore as well.
 2. create a docker compose file
 
    ```
-   vi docker-compose.yml
+  vi docker-compose.yml
+  
+  version: '2'
+  services:
+    cs:
+      image: 10.8.46.202:5000/subbu/ubuntupgrccs
+      ports: 
+        - "1689:1689"
+        - "1690:1690"
+        - "50000:50000"
+        - "50001:50001"
+        - "9080:9080"
+        - "9082:9082"
+        - "8489:8489"     
+      privileged: true
+      container_name: ubuntupgcs
+      hostname: ubuntupgcs
+      command: /bin/bash -c "./start-db ${ExternalIP}"
+    rest:
+      image: 10.8.46.202:5000/restapi/ubuntu/stateless/restapi:7.3.0000.0590
+      ports:
+        - "8080:8080"
+        - "8443:8443"
+      container_name: rest
+      hostname: rest
+      volumes: 
+        - ./rest/config:/root/rest/config
+        - ./rest/logs:/root/rest/logs
+      links:
+        - cs
+      depends_on:
+        - cs
+    primary: 
+      image: 10.8.46.202:5000/xplore/ubuntu/stateless/xplore:1.6.0000.0835
+      hostname: primary
+      container_name: primary
+      ports:
+        - "9300:9300"
+      volumes:
+        - xplore:/root/xPlore/rtdata
+      depends_on:
+        - cs
+    cps:
+      image: 10.8.46.202:5000/xplore/ubuntu/stateless/xplore:1.6.0000.0835
+      hostname: cps
+      container_name: cps
+      environment:
+        - role=cps
+        - primary_addr=primary
+      depends_on:
+        - primary
+    indexagent:
+      image: 10.8.46.202:5000/indexagent/ubuntu/stateless/indexagent:1.6.0000.0835
+      hostname: indexagent
+      container_name: indexagent
+      ports:
+        - "9200:9200"
+      environment:
+        - primary_addr=primary
+        - docbase_name=ubuntudb
+        - docbase_user=dmadmin
+        - docbase_password=password
+        - broker_host=ubuntupgcs
+        - broker_port=1489
+        - registry_name=ubuntudb
+        - registry_user=dm_bof_registry
+        - registry_password=password
+      depends_on:
+        - primary
+      volumes_from:
+        - primary
+  volumes:
+    xplore: {}
    
-   version: '2'
-   services:
-     cs:
-       image: 10.8.46.202:5000/subbu/ubuntupgrccs
-       ports: 
-         - "1689:1689"
-         - "1690:1690"
-         - "50000:50000"
-         - "50001:50001"
-         - "9080:9080"
-         - "9082:9082"
-         - "8489:8489"     
-       privileged: true
-       container_name: ubuntupgcs
-       hostname: ubuntupgcs
-       command: /bin/bash -c "./start-db ${ExternalIP}"
-     rest:
-       image: 10.8.46.202:5000/restapi/ubuntu/stateless/restapi:7.3.0000.0590
-       ports:
-         - "8080:8080"
-         - "8443:8443"
-       container_name: rest
-       hostname: rest
-       volumes: 
-         - ./rest/config:/root/rest/config
-         - ./rest/logs:/root/rest/logs
-       links:
-         - cs
-       depends_on:
-         - cs
-     primary: 
-       image: 10.8.46.202:5000/xplore/ubuntu/stateless/xplore:1.6.0000.0835
-       hostname: primary
-       container_name: primary
-       ports:
-         - "9300:9300"
-       volumes:
-         - xplore:/root/xPlore/rtdata
-       depends_on:
-         - cs
-     cps:
-       image: 10.8.46.202:5000/xplore/ubuntu/stateless/xplore:1.6.0000.0835
-       hostname: cps
-       container_name: cps
-       environment:
-         - role=cps
-         - primary_addr=primary
-       depends_on:
-         - primary
-     indexagent:
-       image: 10.8.46.202:5000/indexagent/ubuntu/stateless/indexagent:1.6.0000.0835
-       hostname: indexagent
-       container_name: indexagent
-       ports:
-         - "9200:9200"
-       environment:
-         - primary_addr=primary
-         - docbase_name=ubuntudb
-         - docbase_user=dmadmin
-         - docbase_password=password
-         - broker_host=ubuntupgcs
-         - broker_port=1489
-         - registry_name=ubuntudb
-         - registry_user=dm_bof_registry
-         - registry_password=password
-       depends_on:
-         - primary
-       volumes_from:
-         - primary
-   volumes:
-     xplore: {}
    ```
 
 3. set environment variable
