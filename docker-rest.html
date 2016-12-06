@@ -38,6 +38,23 @@
                 </p>
             </section>
             <section>
+                <h2>DCTM REST 7.3 new Features</h2>
+                <ul>
+                    <li class="fragment">Enhanced Core services</li>
+                    <li class="fragment">Enhanced full-text search services</li>
+                    <li class="fragment">Enhanced administrative services</li>
+                    <li class="fragment">New collaboration services</li>
+                    <li class="fragment">Enhanced SDK</li>
+                    <li class="fragment">More Sample Applications</li>
+                    <li class="fragment">Enhanced Extensibility</li>
+                    <li class="fragment">SAML2 and other SSO support</li>
+                    <li class="fragment">Authentication extensibility</li>
+                    <li class="fragment">Enhanced web security protection</li>
+                    <li class="fragment">Spring and Java upgrade</li>
+                    <li class="fragment">Docker Support</li>
+                </ul>
+            </section>
+            <section>
                 <h2>Traditional way to deliver REST</h2>
                 <p class="fragment">WEB ARchive (WAR)</p>
                 <img width="50%" height="50%" class="fragment" data-src="docker-rest/rest-deliver.png">
@@ -78,22 +95,40 @@
             </section>
             <section>
                 <h2>About Docker</h2>
+                <p class="fragment">package and deliver application</p>
                 <p class="fragment">lightweight</p>
-                <p class="fragment">flexible</p>
-                <p class="fragment">easy use... Dockerfile</p>
-                <p class="fragment">build once... run everywhere</p>
+                <p class="fragment">open</p>
+                <p class="fragment">fast (comparing with VM)</p>
+                <p class="fragment">build once... run everywhere (like Java)</p>
+                <p class="fragment">sharable</p>
+                <p class="fragment">quick scale</p>
                 <p class="fragment">cheap</p>
+            </section>
+            <section>
+                <h2>Docker Alternatives?</h2>
+                <ul>
+                    <li class="fragment"><a href="https://aws.amazon.com/marketplace/ref=mkt_ste_amis_redirect?b_k=291">Amazon AMI Marketplace</a></li>
+                        <ul class="fragment">
+                            <li>similar with Docker Registry</li>
+                            <li>only on Amazon</li>
+                        </ul>
+                    <li class="fragment"><a href="https://github.com/cloudfoundry/warden">Warden project</a></li>
+                        <ul class="fragment">
+                            <li>LXC manager for Cloud Foundry</li>
+                            <li>no social features of Docker like sharing images</li>
+                        </ul>
+                </ul>
             </section>
             <section>
                 <h2>Agenda</h2>
                 <ul>
                 <!-- todo -->
-                    <li>why ()</li>
-                    <li>what ()</li>
-                    <li>how ()</li>
-                    <li>one-stop solution ()</li>
-                    <li>scalabilty/LB/HA/upgrade ()</li>
-                    <li>Dockerized SAML suite ()</li>
+                    <li>why</li>
+                    <li>what</li>
+                    <li>how</li>
+                    <li>one-stop solution</li>
+                    <li>scalabilty/LB/HA/upgrade</li>
+                    <li>Dockerized SAML suite</li>
                 </ul>
             </section>
             <section>
@@ -101,8 +136,8 @@
                 <p class="fragment">REST is stateless</p>
                 <p class="fragment">local development and test</p>
                 <p class="fragment">CI</p>
-                <p class="fragment">production application deployment</p>
                 <p class="fragment">new approach to deliver application</p>
+                <p class="fragment">simplify production application deployment</p>
             </section>
             <section>
                 <section>
@@ -114,9 +149,9 @@
                 </section>
                 <section>
                     <h3>host environment</h3>
+                    <p class="fragment fade-left">Ubuntu 16.04 and CentOS 7</p>
                     <p class="fragment fade-right">OpenJDK 1.8</p>
                     <p class="fragment fade-left">Tomcat 8.0</p>
-                    <p class="fragment fade-left">Ubuntu 16.04 and CentOS 7</p>
                 </section>
                 <section>
                     <h2>Dockerizing REST - What</h2>
@@ -199,7 +234,7 @@ curl http://dmadmin:password@localhost:8080/dctm-rest/repositories/REPO
             <section>
                 <h3>Check logs</h3>
                 <p class="fragment fade-left">in `pwd`/logs</p>
-                <b class="fragment"><i>forget to persist logs...</i></b>
+                <b class="fragment"><i>forget to configure logs...</i></b>
             </section>
             <section>
                 <section>
@@ -213,6 +248,7 @@ vi rest-api-runtime.properties
 
 docker restart rest
                     </code></pre>
+                    <p class="fragment">check logs</p>
                     <p class="fragment">verify the client token in response</p>
                     <pre class="fragment"><code>
     curl -v http://dmadmin:password@localhost:8080/dctm-rest/repositories/[REPO]
@@ -221,7 +257,6 @@ docker restart rest
     Set-Cookie: DOCUMENTUM-CLIENT-TOKEN=xxxxxxx
     ...
                     </code></pre>
-                    <p class="fragment">check logs</p>
                 </section>
                 <section>
                     <h2>Practice #2</h2>
@@ -233,35 +268,11 @@ docker restart rest
                 <a href="docker-rest/design.png"><img width="70%" class="fragment" src="docker-rest/design.png" alt=""></a>
             </section>
             <section>
-                <h2>Dockerfile</h2>
-                <i><a href="docker-rest/Dockerfile-ubuntu1604">Dockerfile for ubuntu 16.04</a></i>
-                <pre><code class="hljs" data-trim contenteditable>
-FROM ubuntu:16.04
-
-MAINTAINER Chen Wang
-
-# Tomcat env vars
-ENV TOMCAT_MAJOR 8
-ENV TOMCAT_VERSION 8.0.36
-ENV TOMCAT_TGZ_URL https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
-ENV CATALINA_HOME /opt/tomcat
-ENV PATH $PATH:$CATALINA_HOME/bin
-
-# Install JRE 8 and tomcat
-RUN \
-apt-get update && \
-apt-get install -y openjdk-8-jre && \
-apt-get install -y wget && \
-apt-get install -y unzip && \
-rm -rf /var/lib/apt/lists/* && \
-wget --quiet --no-cookies ${TOMCAT_TGZ_URL} -O /tmp/tomcat.tgz && \
-tar xzvf /tmp/tomcat.tgz -C /opt && \
-mv /opt/apache-tomcat-${TOMCAT_VERSION} ${CATALINA_HOME} && \
-rm /tmp/tomcat.tgz && \
-rm -rf ${CATALINA_HOME}/webapps/examples && \
-rm -rf ${CATALINA_HOME}/webapps/docs && \
-rm -rf ${CATALINA_HOME}/webapps/ROOT
-                    </code></pre>
+                <h2>Dockerfile and Entrypoint.sh</h2>
+                <a class="fragment" href="docker-rest/Dockerfile-ubuntu1604">Dockerfile for ubuntu 16.04</a>
+                <p class="fragment">- build image with REST and host environment</p>
+                <a class="fragment" href="docker-rest/entrypoint.sh">entrypoint.sh</a>
+                <p class="fragment">- apply configuration and start container</p>
             </section>
             <section>
                 <h2>REST with HTTPS</h2>
@@ -488,14 +499,14 @@ sudo service docker stop
                     <h2>Dockerized SAML Suite</h2>
                     <ol>
                         <li>launch CS container</li>
-                        <li><a href="#/32/1">create a SAML user in CS (user_source is dm_saml)</a></li>
-                        <li><a href="#/32/2">modify SAML configuration of CS and copy signing cert of IdP to CS</a></li>
+                        <li><a href="#/34/1">create a SAML user in CS (user_source is dm_saml)</a></li>
+                        <li><a href="#/34/2">modify SAML configuration of CS and copy signing cert of IdP to CS</a></li>
                         <li>edit the dfc.properties for REST Services</li>
                         <li>start the docker compose</li>
                     </ol>
                 </section>
                 <section>
-                    <a href="#/28">back</a>
+                    <a href="#/34">back</a>
                     <pre><code>
 docker exec -it cs bash
 source .../dm_set_server_env.sh
@@ -516,7 +527,7 @@ save,c,l
                     </code></pre>
                 </section>
                 <section>
-                    <a href="#/28">back</a>
+                    <a href="#/34">back</a>
                     <pre><code>
 docker exec -it cs bash
 vi .../saml.properties
@@ -550,7 +561,7 @@ docker cp idp/shibboleth-idp/credentials/idp-signing.crt centstateless:/home/sam
                     <p class="fragment">find details <a href="https://iigwiki.corp.emc.com:8443/display/CMAAT/Docker+Elaboration#DockerElaboration-Customization">here</a></p>
             </section>
             <section>
-                <h2></h2>
+                <h2>Recap</h2>
                 <ul>
                     <li class="fragment">leverage Docker built-in features to construct powerful container cluster</li>
                         <ul>
@@ -559,9 +570,9 @@ docker cp idp/shibboleth-idp/credentials/idp-signing.crt centstateless:/home/sam
                         </ul>
                     <li class="fragment">demostrate the usage of Dockerized REST in "real" scenario</li>
                         <ul>
-                            <li class="fragment">well made images</li>
+                            <li class="fragment">well made image for different services</li>
                             <li class="fragment">scripts to coordinate the associated configurations</li>
-                            <li class="fragment">simply the interface for end users</li>
+                            <li class="fragment">simply the interface for end users if possible</li>
                             <li class="fragment">make good use of docker-compose</li>
                         </ul>
                 </ul>

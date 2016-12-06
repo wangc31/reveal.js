@@ -249,11 +249,7 @@ Actually this practice could include xPlore as well.
 
    ```
    vi docker-compose.yml
-   ```
-
-   ​
-
-   ```
+   
    version: '2'
    services:
      cs:
@@ -413,17 +409,7 @@ Actually this practice could include xPlore as well.
 
    *if the CS is in container, need to  run `source .../dm_set_server_env.sh` before `iapi`*
 
-2. clone the repository 
-
-   `git clone https://github.com/wangc31/docker-ispecialist.git ~/tmp` 
-
-3. change to the work directory
-
-   ```
-   cd ~/tmp/saml-docker-compose
-   ```
-
-4. modify SAML configuration of CS
+2. modify SAML configuration of CS
 
    ```
    vi .../saml.properties
@@ -442,6 +428,16 @@ Actually this practice could include xPlore as well.
    ```
 
    ​
+
+3. clone the repository 
+
+   `git clone https://github.com/wangc31/docker-ispecialist.git ~/tmp` 
+
+4. change to the work directory
+
+   ```
+   cd ~/tmp/saml-docker-compose
+   ```
 
 5. copy IdP signing cert to CS
 
