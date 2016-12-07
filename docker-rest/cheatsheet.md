@@ -367,7 +367,7 @@ Actually this practice could include xPlore as well.
 
    ​
 
-8. about 5 minutes later, verify the REST services
+8. about 3 minutes later, verify the REST services
 
    ```
    curl http://dmadmin:password@localhost:8080/dctm-rest/repositories/[REPO]
@@ -377,7 +377,7 @@ Actually this practice could include xPlore as well.
 
    This will launch containers of xPlore and index agent. One manual step is needed to start index agent.
 
-   Details can be found [here](https://iigwiki.corp.emc.com:8443/display/CMAAT/Docker+Elaboration#DockerElaboration-One-StopSolutionwithCSandxPlore(deprecatedasall-in-oneCSimageisnotofficiallysupported))
+   Details can be found [here](https://iigwiki.corp.emc.com:8443/display/CMAAT/Docker+Elaboration#DockerElaboration-One-StopSolutionwithCSandxPlore)
 
    ```
    docker-compose up -d cps
@@ -435,7 +435,9 @@ Actually this practice could include xPlore as well.
 
 3. clone the repository 
 
-   `git clone https://github.com/wangc31/docker-ispecialist.git ~/tmp` 
+   ```
+   git clone https://github.com/wangc31/docker-ispecialist.git ~/tmp
+   ``` 
 
 4. change to the work directory
 
@@ -448,7 +450,7 @@ Actually this practice could include xPlore as well.
    *if Content Server is in container cs*
 
    ```
-   docker cp idp/shibboleth-idp/credentials/idp-signing.crt cs:/home/SAML/cert
+   docker cp idp/shibboleth-idp/credentials/idp-signing.crt [CS]:/home/SAML/cert
    ```
 
    *or you need to copy it in other ways*
