@@ -562,6 +562,40 @@ docker cp idp/shibboleth-idp/credentials/idp-signing.crt centstateless:/home/sam
                     <p class="fragment">find details <a href="https://iigwiki.corp.emc.com:8443/display/CMAAT/Docker+Elaboration#DockerElaboration-Customization">here</a></p>
             </section>
             <section>
+                <section>
+                    <h2>not best practice</h2>
+                </section>
+                <section>
+                    <h3>setup services in machines</h3>
+                    <img class="fragment" src="docker-rest/saml.png" alt="">
+                </section>
+                <section data-transition="fade">
+                    <h3>move services into container one by one</h3>
+                    <img class="fragment" src="docker-rest/saml-1.png" alt="">
+                </section>
+                <section data-transition="fade">
+                    <img class="fragment" src="docker-rest/saml-2.png" alt="">
+                </section>
+                <section data-transition="fade">
+                    <img class="fragment" src="docker-rest/saml-3.png" alt="">
+                </section>
+                <section data-transition="fade">
+                    <h3>move contianers into docker compose project one by one</h3>
+                    <img class="fragment" src="docker-rest/saml-dc-1.png" alt="">
+                </section>
+                <section data-transition="fade">
+                    <img class="fragment" src="docker-rest/saml-dc-2.png" alt="">
+                </section>
+                <section data-transition="fade">
+                    <img class="fragment" src="docker-rest/saml-dc-3.png" alt="">
+                </section>
+                <section>
+                    <h3>figure out supported customization</h3>
+                    <h3 class="fragment">and construct instructions</h3>
+                    <i class="fragment">configuration files and scripts</i>
+                </section>
+            </section>
+            <section>
                 <h2>Recap</h2>
                 <ul>
                     <li class="fragment">leverage Docker built-in features to construct powerful container cluster</li>

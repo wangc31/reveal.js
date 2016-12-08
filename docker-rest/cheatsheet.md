@@ -5,7 +5,10 @@
 1. docker and docker-compose installed
 2. swarm mode exercises need at least two docker hosts
 3. download the image tar files from [support site](https://support.emc.com/search/?text=documentum%20docker) or retrieve from ECD internal registry during exercises
-4. todo config registry
+4. for SAML practice, load these images a customized shibboleth image  
+	a. `docker pull dorowu/ubuntu-desktop-lxde-vnc`  
+	b. `docker pull greggigon/apacheds`  
+	c.  
 
 
 
@@ -480,3 +483,27 @@ Actually this practice could include xPlore as well.
 11. the credential is samler/passw0rd 
 
 12. after passing IdP verification, it will redirect back to REST services
+
+*The authentication could fail on some Docker hosts (encrypt provider load issue), restart the rest container will workaround the issue `docker restart rest`*
+
+## A Tiny Tool
+Sometimes we want to pull images from individual registry, but don't know which images are available.
+This is a tiny tool which can be always running in background.  
+
+1. clone the project
+	```
+	git clone https://github.com/wangc31/docker-registry-viewer.git ~/registry-viewer
+	```
+2. change to the project folder  
+```
+cd ~/registry-viewer
+```  
+3. build the image  
+```
+docker build -t registry-viewer .
+```  
+4. run the registry viewer  
+```
+docker run --rm -p 5000:5000 --env REGISTRY_HOST=http://[REGISTRY_HOST]:[REGISTRY_PORT] registry-viewer
+```  
+5. view the registry `http://localhost:5000`
