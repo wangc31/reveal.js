@@ -124,12 +124,13 @@
                 <h2>Agenda</h2>
                 <ul>
                 <!-- todo -->
-                    <li>why</li>
-                    <li>what</li>
-                    <li>how</li>
-                    <li>one-stop solution</li>
-                    <li>scalabilty/LB/HA/upgrade</li>
-                    <li>Dockerized SAML suite</li>
+                    <li>Why</li>
+                    <li>What</li>
+                    <li>Run REST container</li>
+                    <li>How</li>
+                    <li>One-stop solution (REST/CS/xPlore)</li>
+                    <li>REST container scalability/LB/HA/upgrade</li>
+                    <li>Dockerized SAML solution</li>
                 </ul>
             </section>
             <section>
@@ -391,9 +392,28 @@ docker restart rest
                 </ol>
             </section>
             <section>
+                <h2>create a service</h2>
+                <p class="fragment">
+                    <pre><code>
+docker service create [IMAGE] [COMMAND]
+                    </code></pre>
+                </p>
+                <pre class="fragment"><code>
+ docker service create --name helloworld alpine ping docker.com                    
+                </code></pre>
+            </section>
+            <section>
                 <h2>Mapping Configuration Files Cross Nodes</h2>
-                <p class="fragment">network dirver or third-party solution (like <a href="https://clusterhq.com/flocker/introduction/">flocker</a>)</p>
-                <b class="fragment"><i>here we will burn the configuration files in the image</i></b>
+                <pre class="fragment"><code>
+docker run --name rest -p 8080:8080 -d \
+    -v `pwd`/config:/root/rest/config \
+    -v `pwd`/logs:/root/rest/logs restapi_ubuntu:7.3.0000.0590                    
+                </code></pre>
+                <p class="fragment">no mature built-in shared volume solution</p>
+                <ul>
+                    <li class="fragment">network dirver or third-party solution (like <a href="https://clusterhq.com/flocker/introduction/">flocker</a>)</li>
+                    <li class="fragment">here we will burn the configuration files in the image</li>
+                </ul>
             </section>
             <section>
                 <h2>Burn Configuration Files</h2>
@@ -403,17 +423,17 @@ FROM restapi_ubuntu:7.3.0000.0590
 COPY config/ ${CONFIG_DIR}/
                 </code></pre>
                 <pre><code>
-docker build -t rest-node .
+docker build -t 10.240.194.77:5000/rest-node .
                 </code></pre>
-                <p class="fragment">push image to registry so that all swarm ndoes can get image</p>
+                <p class="fragment">push image to registry so that all swarm nodes can get image</p>
                 <pre class="fragment"><code>
-docker push rest-node
+docker push 10.240.194.77:5000/rest-node
                 </code></pre>
             </section>
             <section>
                 <h2>Initiate REST Services on Multiple Nodes</h2>
                 <pre class="fragment"><code>
-docker service create --replicas 2 --name rest-multinodes -p 8080:8080 rest-node
+docker service create --replicas 3 --name rest-multinodes -p 8080:8080 10.240.194.77:5000/rest-node
                 </code></pre>
                 <p class="fragment">check the service</p>
                 <pre class="fragment"><code>
@@ -445,8 +465,8 @@ docker service ls
                     <h2>Upgrade REST Services Seamlessly</h2>
                     <p class="fragment">prepare a dummy new version image</p>
                     <pre class="fragment"><code>
-docker tag rest-node rest-node:new
-docker push rest-node:new
+docker tag 10.240.194.77:5000/rest-node 10.240.194.77:5000/rest-node:new
+docker push 10.240.194.77:5000/rest-node:new
                     </code></pre>
                     <p class="fragment">update strategy of service</p>
                     <pre class="fragment"><code>
@@ -457,7 +477,7 @@ docker service update rest-multinodes --update-delay 20s --update-parallelism 1
                     <h2>Upgrade REST Services Seamlessly (cont.)</h2>
                     <p class="fragment">kick off upgrading</p>
                     <pre class="fragment"><code>
-docker service update --image rest-node:new rest-multimodes
+docker service update --image 10.240.194.77:5000/rest-node:new rest-multinodes
                     </code></pre>
                     <p class="fragment">check the upgrading process</p>
                     <pre class="fragment"><code>
@@ -482,6 +502,10 @@ sudo service docker stop
                 <h2>Practice #5</h2>
                 <p>after session</p>
             </section>
+            <section data-background="#ffffff">
+                <h2 style="color: black">SAML 2.0 Breif Introduction</h2>
+                <img class="fragment" src="docker-rest/saml-intro.png" alt="">
+            </section>
             <section>
                 <h2>SAML 2.0 is new authn schema in 7.3</h2>
                 <p class="fragment">useful but complicated and not easy to set up</p>
@@ -494,6 +518,9 @@ sudo service docker stop
                     <li class="fragment">configurations for services are associated with each other</li>
                     <li class="fragment">difficult to verify whether each configure step is correct or not</li>
                 </ul>
+                <p class="fragment"><i>experienced - 1 or 2 days</i></p>
+                <p class="fragment"><i>new to SAML - 2 days or more</i></p>
+                <h4 class="fragment"><i>reduce the effort to several minutes?</i></h4>
             </section>
             <section>
                 <section>
@@ -564,6 +591,7 @@ docker cp idp/shibboleth-idp/credentials/idp-signing.crt centstateless:/home/sam
             <section>
                 <section>
                     <h2>not best practice</h2>
+                    <h4>dockerizing solution</h4>
                 </section>
                 <section>
                     <h3>setup services in machines</h3>
@@ -614,6 +642,15 @@ docker cp idp/shibboleth-idp/credentials/idp-signing.crt centstateless:/home/sam
             </section>
             <section>
                 <h2>Q&A</h2>
+            </section>
+            <section>
+                <h2>Materials</h2>
+                <ul>
+                    <li><a href="https://community.emc.com/docs/DOC-55881">DCTM REST 7.3 Landing Page</a></li>
+                    <li><a href="https://community.emc.com/docs/DOC-32266">DCTM REST Home in DEDN</a></li>
+                    <li><a href="https://iigwiki.corp.emc.com:8443/display/CMAAT/Documentum+Core+REST+Engineering+Homepage?src=breadcrumbs-parent">DCTM REST Engineering Home Page </a></li>
+                    <li><a href="https://github.com/Enterprise-Content-Management">REST clients Sample</a></li>
+                </ul>
             </section>
             <section>
                 <h2>Thanks</h2>

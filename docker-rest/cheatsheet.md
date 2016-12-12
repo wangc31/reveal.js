@@ -8,7 +8,7 @@
 4. for SAML practice, load these images a customized shibboleth image  
 	a. `docker pull dorowu/ubuntu-desktop-lxde-vnc`  
 	b. `docker pull greggigon/apacheds`  
-	c.  
+	c. `scp dmadmin@10.240.194.73:/home/dmadmin/ispecialist/rest/images/rest-shib-idp.tar /local/dir`
 
 
 
@@ -177,7 +177,7 @@ Assuming there is a running REST container launched in Practice #1, in this exer
 
 ##Practice #3 - Enable HTTPS for REST container
 
-If we finish Practice #2 and #3, we can stop and remove the running REST container by `docker rm -f rest` 
+If we finish Practice #2 and #3, we can stop and remove the running REST container by `docker rm -f rest`; or you can repeat step 1 - 4 of practice #1 and continue this practice
 
 In this practice, we will enable SSL for REST services.
 
@@ -186,7 +186,7 @@ In this practice, we will enable SSL for REST services.
    ```
    mkdir -p ~/docker-ispecialist/rest/config/security
    ```
-   and recover _rest-api-runtime.properties_
+   and recover _rest-api-runtime.properties_ if necessary
    ```
    echo "" > ~/docker-ispecialist/rest/config/rest-api-runtime.properties
    ```
@@ -253,82 +253,81 @@ Actually this practice could include xPlore as well.
 
 2. create a docker compose file
 
-   ```
-  vi docker-compose.yml
-  
-  version: '2'
-  services:
-    cs:
-      image: 10.8.46.202:5000/subbu/ubuntupgrccs
-      ports: 
-        - "1689:1689"
-        - "1690:1690"
-        - "50000:50000"
-        - "50001:50001"
-        - "9080:9080"
-        - "9082:9082"
-        - "8489:8489"     
-      privileged: true
-      container_name: ubuntupgcs
-      hostname: ubuntupgcs
-      command: /bin/bash -c "./start-db ${ExternalIP}"
-    rest:
-      image: 10.8.46.202:5000/restapi/ubuntu/stateless/restapi:7.3.0000.0590
-      ports:
-        - "8080:8080"
-        - "8443:8443"
-      container_name: rest
-      hostname: rest
-      volumes: 
-        - ./rest/config:/root/rest/config
-        - ./rest/logs:/root/rest/logs
-      links:
-        - cs
-      depends_on:
-        - cs
-    primary: 
-      image: 10.8.46.202:5000/xplore/ubuntu/stateless/xplore:1.6.0000.0835
-      hostname: primary
-      container_name: primary
-      ports:
-        - "9300:9300"
-      volumes:
-        - xplore:/root/xPlore/rtdata
-      depends_on:
-        - cs
-    cps:
-      image: 10.8.46.202:5000/xplore/ubuntu/stateless/xplore:1.6.0000.0835
-      hostname: cps
-      container_name: cps
-      environment:
-        - role=cps
-        - primary_addr=primary
-      depends_on:
-        - primary
-    indexagent:
-      image: 10.8.46.202:5000/indexagent/ubuntu/stateless/indexagent:1.6.0000.0835
-      hostname: indexagent
-      container_name: indexagent
-      ports:
-        - "9200:9200"
-      environment:
-        - primary_addr=primary
-        - docbase_name=ubuntudb
-        - docbase_user=dmadmin
-        - docbase_password=password
-        - broker_host=ubuntupgcs
-        - broker_port=1489
-        - registry_name=ubuntudb
-        - registry_user=dm_bof_registry
-        - registry_password=password
-      depends_on:
-        - primary
-      volumes_from:
-        - primary
-  volumes:
-    xplore: {}
-   
-   ```
+	```
+	vi docker-compose.yml
+	  
+	version: '2'
+	services:
+	  cs:
+	    image: ubuntupgrccs
+	    ports: 
+	      - "1689:1689"
+	      - "1690:1690"
+	      - "50000:50000"
+	      - "50001:50001"
+	      - "9080:9080"
+	      - "9082:9082"
+	      - "8489:8489"     
+	    privileged: true
+	    container_name: ubuntupgcs
+	    hostname: ubuntupgcs
+	    command: /bin/bash -c "./start-db ${ExternalIP}"
+	  rest:
+	    image: restapi_ubuntu:7.3.0000.0590
+	    ports:
+	      - "8080:8080"
+	      - "8443:8443"
+	    container_name: rest
+	    hostname: rest
+	    volumes: 
+	      - ./rest/config:/root/rest/config
+	      - ./rest/logs:/root/rest/logs
+	    links:
+	      - cs
+	    depends_on:
+	      - cs
+	  primary: 
+	    image: 10.8.46.202:5000/xplore/ubuntu/stateless/xplore:1.6.0000.0835
+	    hostname: primary
+	    container_name: primary
+	    ports:
+	      - "9300:9300"
+	    volumes:
+	      - xplore:/root/xPlore/rtdata
+	    depends_on:
+	      - cs
+	  cps:
+	    image: 10.8.46.202:5000/xplore/ubuntu/stateless/xplore:1.6.0000.0835
+	    hostname: cps
+	    container_name: cps
+	    environment:
+	      - role=cps
+	      - primary_addr=primary
+	    depends_on:
+	      - primary
+	  indexagent:
+	    image: 10.8.46.202:5000/indexagent/ubuntu/stateless/indexagent:1.6.0000.0835
+	    hostname: indexagent
+	    container_name: indexagent
+	    ports:
+	      - "9200:9200"
+	    environment:
+	      - primary_addr=primary
+	      - docbase_name=ubuntudb
+	      - docbase_user=dmadmin
+	      - docbase_password=password
+	      - broker_host=ubuntupgcs
+	      - broker_port=1489
+	      - registry_name=ubuntudb
+	      - registry_user=dm_bof_registry
+	      - registry_password=password
+	    depends_on:
+	      - primary
+	    volumes_from:
+	      - primary
+	volumes:
+	  xplore: {}     
+	```
 
 3. set environment variable
 
@@ -390,7 +389,96 @@ Actually this practice could include xPlore as well.
 
 
 ## Practice #5 - REST container LB/HA/Scale/Upgrade
+1. initialize swarm on the first Docker host
 
+	```
+	docker swarm init --advertise-addr 192.168.2.102
+	```  
+2. join the swarm on the second Docker host
+
+	```
+	docker swarm join \
+    --token SWMTKN-1-3mfe5amyoo5gg9ux0os1iq43a1k79m4rus3ycb9ztuj7r344cn-15xsjz4oqiyx926nwbo1u44he \
+    192.168.2.102:2377
+	```
+3. check the swarm by running the command on the FIRST Docker host
+
+	```
+	docker node ls
+	```
+4. make the folder
+
+	```
+	mkdir -p ~/docker-ispecialist/swarm/config
+	cd ~/docker-ispecialist/swarm
+	```
+5. create Dockerfile for burning the configurationfiles
+
+	```
+	vi Dockerfile
+	```
+	
+	```
+	FROM 10.31.4.205:5000/restapi/ubuntu/stateless/restapi:7.3.0000.0590
+	COPY config/ ${CONFIG_DIR}/
+	```
+6. create configuration file
+
+	```
+	cd ~/docker-ispecialist/swarm/config
+	vi dfc.properties
+	vi log4j.properties
+	```
+7. build the rest node image containing configuration file and push to registry
+
+	```
+	cd ~/docker-ispecialist/swarm/
+	docker build -t 10.240.194.77:5000/rest-node .
+	docker push 10.240.194.77:5000/rest-node
+	```
+8. create REST service
+
+	```
+	docker service create --replicas 1 --name rest-multinodes -p 8080:8080 \
+	10.240.194.77:5000/rest-node
+                
+	```
+9. check the service
+
+	```
+	docker service ps rest-multinodes
+	```
+10. consume REST service
+
+	```
+	curl http://[HOST]:8080/dctm-rest/repositories
+	```
+11. scale REST service
+
+	```
+	docker service scale rest-multinodes=2
+	```
+12. seamless upgrade needs an dummy new image
+
+	```
+	docker tag rest-node 10.240.194.77:5000/rest-node:new
+	docker push 10.240.194.77:5000/rest-node:new
+	```
+13. update the upgrade stragety 
+
+	```
+	docker service update rest-multinodes --update-delay 20s --update-parallelism 1
+	```
+14. kick off upgrade
+
+	```
+	docker service update --image 10.240.194.77:5000/rest-node:new rest-multinodes
+	```
+15. check the upgrading
+
+	```
+	docker service ps rest-multinodes
+	```
 
 
 ## Practice #6 - REST Docker Solution for SAML Scenario
@@ -476,11 +564,11 @@ Actually this practice could include xPlore as well.
 
 8. login the client - open browser to visit [localhost:6080/vnc.html](localhost:6080/vnc.html) (no password)
 
-9. launch a firefox in the client and visit https://rest-docker:8443/dctm-rest/repositories
+9. launch a firefox in the client and visit `https://rest-docker:8443/dctm-rest/repositories`
 
 10. follow the response to visit one repository resource; it will redirect to IdP login page
 
-11. the credential is samler/passw0rd 
+11. the credential is `samler/passw0rd` 
 
 12. after passing IdP verification, it will redirect back to REST services
 
