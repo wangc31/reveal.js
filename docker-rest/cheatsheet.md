@@ -439,7 +439,7 @@ Actually this practice could include xPlore as well.
 8. create REST service
 
 	```
-	docker service create --replicas 1 --name rest-multinodes -p 8080:8080 \
+	docker service create --replicas 2 --name rest-multinodes -p 8080:8080 \
 	10.240.194.77:5000/rest-node
                 
 	```
@@ -456,7 +456,7 @@ Actually this practice could include xPlore as well.
 11. scale REST service
 
 	```
-	docker service scale rest-multinodes=2
+	docker service scale rest-multinodes=3
 	```
 12. seamless upgrade needs an dummy new image
 
@@ -562,7 +562,7 @@ Actually this practice could include xPlore as well.
 
    ​
 
-8. login the client - open browser to visit [localhost:6080/vnc.html](localhost:6080/vnc.html) (no password)
+8. login the client - open browser to visit `[DOCKER_HOST]:6080/vnc.html` (no password)
 
 9. launch a firefox in the client and visit `https://rest-docker:8443/dctm-rest/repositories`
 

@@ -40,15 +40,12 @@
             <section>
                 <h3>DCTM REST 7.3 new Features</h3>
                 <ul>
-                    <li class="fragment">Enhanced Core services</li>
+                    <li class="fragment">Enhanced Core and administrative services</li>
                     <li class="fragment">Enhanced full-text search services</li>
-                    <li class="fragment">Enhanced administrative services</li>
                     <li class="fragment">New collaboration services</li>
-                    <li class="fragment">Enhanced SDK</li>
-                    <li class="fragment">More Sample Applications</li>
-                    <li class="fragment">Enhanced Extensibility</li>
+                    <li class="fragment">Enhanced SDK and extensibility (including authn ext)</li>
+                    <li class="fragment">More Sample Applications <a href="https://github.com/Enterprise-Content-Management">on Github</a></li>
                     <li class="fragment">SAML2 and other SSO support</li>
-                    <li class="fragment">Authentication extensibility</li>
                     <li class="fragment">Enhanced web security protection</li>
                     <li class="fragment">Spring and Java upgrade</li>
                     <li class="fragment">Docker Support</li>
@@ -363,17 +360,21 @@ docker restart rest
                 <h4 class="fragment">scalability</h4>
                 <h4 class="fragment">load balance</h4>
                 <h4 class="fragment">high availability</h4>
-                <h4 class="fragment">extended usage in typical scenario</h4>
+                <h4 class="fragment">extended usage in "real" user scenario</h4>
             </section>
             <section>
                 <section>
                     <h2>Dockerizing REST - Scalability, LB and HA</h2>
-                    <p>Two main approaches</p>
+                    <p>3 main approaches</p>
                 </section>
                 <section>
                     <h3 class="fragment">port traditional solutions to Docker</h3>
                     <i class="fragment">e.g., <a href="http://www.haproxy.org">HAProxy</a> and its <a href="https://iigwiki.corp.emc.com:8443/display/CMAAT/Docker+Elaboration#DockerElaboration-DockerizingHAProxySolution">Dockerized Solution</a></i>
                     <img class="fragment fade-left" src="docker-rest/haproxy.png" alt="haproxy">
+                </section>
+                <section>
+                    <h3 class="fragment">3rd party solution</h3>
+                    <i class="fragment">like Kubernetes, Rancher and etc</i>
                 </section>
                 <section>
                     <h3>pure docker solution</h3>
@@ -399,7 +400,7 @@ docker service create [IMAGE] [COMMAND]
                     </code></pre>
                 </p>
                 <pre class="fragment"><code>
- docker service create --name helloworld alpine ping docker.com                    
+ docker service create --name helloworld --replicas 3 alpine ping docker.com                    
                 </code></pre>
             </section>
             <section>
@@ -501,6 +502,9 @@ sudo service docker stop
                 <section>
                 <h2>Practice #5</h2>
                 <p>after session</p>
+            </section>
+            <section>
+                <h2>Dockerized REST in "Real" Scenario</h2>
             </section>
             <section data-background="#ffffff">
                 <h2 style="color: black">SAML 2.0 Breif Introduction</h2>
